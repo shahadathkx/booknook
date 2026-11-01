@@ -2,13 +2,41 @@ import { Book } from "@/types/book";
 import { INITIAL_BOOKS } from "@/lib/seed-data";
 
 /**
- * Normalize a raw book object from the API (which may use `_id` from MongoDB)
- * into the client-side `Book` shape that always uses `id`.
+ * Normalize a raw book object from the API (which may use `_id` from MongoDB,
+ * `image` instead of `coverImage`, `createdAt` instead of `addedAt`, etc.)
+ * into the client-side `Book` shape that always uses `id` and `coverImage`.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizeBook(raw: any): Book {
-  const { _id, id, ...rest } = raw;
-  return { id: id ?? String(_id ?? ""), ...rest } as Book;
+export function normalizeBook(raw: any): Book {
+  if (!raw) return raw;
+  const { _id, id, image, coverImage, cover_image, imageUrl, ...rest } = raw;
+  const resolvedImage = coverImage || image || cover_image || imageUrl || undefined;
+  const bookId = id ?? (typeof _id === "object" ? String(_id) : _id ? String(_id) : "");
+
+  return {
+    id: bookId,
+    title: raw.title || "Untitled Volume",
+    author: raw.author || "Unknown Author",
+    genre: raw.genre || raw.category || "Fiction",
+    category: raw.category || raw.genre || "Fiction",
+    isbn: raw.isbn || `978-${bookId.slice(-9).padStart(9, "0")}`,
+    publishedYear: Number(raw.publishedYear || raw.year || 2024),
+    description: raw.description || "A volume in the BookNook catalog.",
+    coverTheme: raw.coverTheme || {
+      id: "emerald",
+      label: "Emerald Hearth",
+      gradientClass: "from-emerald-950 via-teal-950 to-slate-900",
+    },
+    coverImage: resolvedImage,
+    image: resolvedImage,
+    status: raw.status || (Number(raw.availableCopies ?? 1) > 0 ? "available" : "borrowed"),
+    totalCopies: Number(raw.totalCopies ?? raw.copies ?? 1),
+    availableCopies: Number(raw.availableCopies ?? raw.totalCopies ?? 1),
+    addedAt: raw.addedAt || raw.createdAt || new Date().toISOString(),
+    addedBy: raw.addedBy,
+    currentBorrow: raw.currentBorrow ?? null,
+    ...rest,
+  } as Book;
 }
 
 /**

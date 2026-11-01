@@ -316,9 +316,9 @@ export function BookDetailView({ initialBook, bookId }: BookDetailViewProps) {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8fd9a8]/60 to-transparent" />
 
             <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#15251d] shadow-lg">
-              {liveBook.coverImage ? (
+              {(liveBook.coverImage || (liveBook as any).image) ? (
                 <Image
-                  src={liveBook.coverImage}
+                  src={(liveBook.coverImage || (liveBook as any).image)!}
                   alt={`Cover of ${liveBook.title}`}
                   fill
                   priority

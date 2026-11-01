@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Book } from "@/types/book";
@@ -12,30 +12,38 @@ interface CatalogBookCardProps {
 }
 
 export function CatalogBookCard({ book }: CatalogBookCardProps) {
-  const copies = typeof book.availableCopies === "number"
-    ? book.availableCopies
-    : book.status === "available"
-    ? 1
-    : 0;
+  const [imageError, setImageError] = useState(false);
+  const copies =
+    typeof book.availableCopies === "number"
+      ? book.availableCopies
+      : book.status === "available"
+      ? 1
+      : 0;
   const isAvailable = copies > 0;
-  const categoryName = book.category || book.genre;
+  const categoryName = book.category || book.genre || "Fiction";
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rawCoverUrl = book.coverImage || (book as any).image;
+  const coverUrl = imageError ? null : rawCoverUrl;
 
   return (
     <article className="group flex flex-col rounded-3xl border border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 hover:border-[#8fd9a8]/50 h-full relative">
       {/* Cover image container */}
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-[#15251d] shrink-0">
-        {book.coverImage ? (
+        {coverUrl ? (
           <Image
-            src={book.coverImage}
+            src={coverUrl}
             alt={`Cover illustration of ${book.title}`}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            onError={() => setImageError(true)}
           />
         ) : (
           <div
             className={`w-full h-full bg-gradient-to-br ${
-              book.coverTheme?.gradientClass || "from-slate-900 via-indigo-950 to-blue-900 text-amber-100"
+              book.coverTheme?.gradientClass ||
+              "from-slate-900 via-indigo-950 to-blue-900 text-amber-100"
             } flex items-center justify-center p-6 text-center`}
           >
             <div>

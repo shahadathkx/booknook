@@ -70,7 +70,7 @@ export function MyBorrowsContent() {
             bookId: it.bookId?._id || it.bookId || it.book?.id || it.id,
             title: it.book?.title || it.bookTitle || it.title || "Library Volume",
             author: it.book?.author || it.author || "BookNook Author",
-            coverImage: it.book?.coverImage || it.coverImage,
+            coverImage: it.book?.coverImage || it.book?.image || it.coverImage || it.image,
             coverTheme: it.book?.coverTheme || it.coverTheme,
             borrowDate: it.borrowDate || it.borrowedAt || it.createdAt || new Date().toISOString(),
             returnDate:

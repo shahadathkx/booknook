@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Book } from "@/types/book";
+import { normalizeBook } from "@/lib/books";
 import { useAuth } from "@/hooks/use-auth";
 import { useLibrary } from "@/context/library-context";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -64,7 +65,7 @@ export function MyBooksContent() {
         const json = await res.json();
         const items = Array.isArray(json) ? json : json?.books || json?.data;
         if (Array.isArray(items) && items.length > 0) {
-          setUserBooks(items);
+          setUserBooks(items.map(normalizeBook));
           setIsFetching(false);
           return;
         }
