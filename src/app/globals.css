@@ -1,26 +1,158 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import "tw-animate-css";
+@plugin "daisyui" {
+  themes: booknook-dark, booknook-light;
 }
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-serif: var(--font-heading);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Design System Reference Colors */
+  --color-forest-bg: #0e1a14;
+  --color-forest-card: #15251d;
+  --color-forest-border: #1f362b;
+  --color-mint-accent: #8fd9a8;
+  --color-orange-eyebrow: #e0915a;
+  --color-light-text: #e6f0ea;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* =========================================================================
+   BookNook Dark Theme: "booknook-dark" (Deep green-black forest palette)
+   Background: #0e1a14, Cards: #15251d, Borders: #1f362b, Accent: #8fd9a8
+   ========================================================================= */
+[data-theme="booknook-dark"],
+.dark,
+:root {
+  color-scheme: dark;
+
+  /* DaisyUI Core Theme Tokens */
+  --color-base-100: #0e1a14;
+  --color-base-200: #15251d;
+  --color-base-300: #1f362b;
+  --color-base-content: #e6f0ea;
+  --color-primary: #8fd9a8;
+  --color-primary-content: #0e1a14;
+  --color-secondary: #1a2f25;
+  --color-secondary-content: #8fd9a8;
+  --color-accent: #e0915a;
+  --color-accent-content: #ffffff;
+  --color-neutral: #15251d;
+  --color-neutral-content: #e6f0ea;
+  --color-info: #74c7ec;
+  --color-success: #8fd9a8;
+  --color-warning: #e0915a;
+  --color-error: #f87171;
+
+  /* Tailwind / Component Design Tokens */
+  --background: #0e1a14;
+  --foreground: #e6f0ea;
+  --card: #15251d;
+  --card-foreground: #e6f0ea;
+  --popover: #15251d;
+  --popover-foreground: #e6f0ea;
+  --primary: #8fd9a8;
+  --primary-foreground: #0e1a14;
+  --secondary: #1a2f25;
+  --secondary-foreground: #8fd9a8;
+  --muted: #1a2f25;
+  --muted-foreground: #8fa397;
+  --accent: #e0915a;
+  --accent-foreground: #ffffff;
+  --destructive: #f87171;
+  --border: #1f362b;
+  --input: #1f362b;
+  --ring: #8fd9a8;
+  --radius: 0.875rem;
+  --font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Fraunces', Georgia, serif;
+}
+
+/* =========================================================================
+   BookNook Light Theme: "booknook-light" (Warm off-white with mint green accent)
+   Background: #f7f9f7, Cards: #ffffff, Borders: #dce6df, Accent: #8fd9a8
+   ========================================================================= */
+[data-theme="booknook-light"] {
+  color-scheme: light;
+
+  /* DaisyUI Core Theme Tokens */
+  --color-base-100: #f7f9f7;
+  --color-base-200: #ffffff;
+  --color-base-300: #dce6df;
+  --color-base-content: #122119;
+  --color-primary: #8fd9a8;
+  --color-primary-content: #0e1a14;
+  --color-secondary: #edf5ef;
+  --color-secondary-content: #1b3d2b;
+  --color-accent: #e0915a;
+  --color-accent-content: #ffffff;
+  --color-neutral: #233b2e;
+  --color-neutral-content: #ffffff;
+  --color-info: #0284c7;
+  --color-success: #16a34a;
+  --color-warning: #e0915a;
+  --color-error: #dc2626;
+
+  /* Tailwind / Component Design Tokens */
+  --background: #f7f9f7;
+  --foreground: #122119;
+  --card: #ffffff;
+  --card-foreground: #122119;
+  --popover: #ffffff;
+  --popover-foreground: #122119;
+  --primary: #8fd9a8;
+  --primary-foreground: #0e1a14;
+  --secondary: #edf5ef;
+  --secondary-foreground: #1b3d2b;
+  --muted: #edf5ef;
+  --muted-foreground: #5a7566;
+  --accent: #e0915a;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --border: #dce6df;
+  --input: #dce6df;
+  --ring: #8fd9a8;
+  --radius: 0.875rem;
+  --font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Fraunces', Georgia, serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground transition-colors duration-200;
+  }
+  html {
+    @apply font-sans;
+  }
 }
