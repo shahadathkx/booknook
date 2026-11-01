@@ -256,10 +256,7 @@ export function MyBooksContent() {
                                 alt={book.title}
                                 fill
                                 className="object-cover"
-                                unoptimized={
-                                  book.coverImage.startsWith("data:") ||
-                                  book.coverImage.startsWith("blob:")
-                                }
+                                unoptimized={!book.coverImage.startsWith("/")}
                               />
                             ) : (
                               <div
@@ -375,10 +372,7 @@ export function MyBooksContent() {
                             alt={book.title}
                             fill
                             className="object-cover"
-                            unoptimized={
-                              book.coverImage.startsWith("data:") ||
-                              book.coverImage.startsWith("blob:")
-                            }
+                            unoptimized={!book.coverImage.startsWith("/")}
                           />
                         ) : (
                           <div

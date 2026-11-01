@@ -394,7 +394,7 @@ export function EditBookModal({
                     alt="Cover preview"
                     fill
                     className="object-cover"
-                    unoptimized={displayImage.startsWith("data:") || displayImage.startsWith("blob:")}
+                    unoptimized={!displayImage.startsWith("/")}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground">

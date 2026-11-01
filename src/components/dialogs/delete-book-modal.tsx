@@ -89,7 +89,7 @@ export function DeleteBookModal({
                 alt={book.title}
                 fill
                 className="object-cover"
-                unoptimized={book.coverImage.startsWith("data:") || book.coverImage.startsWith("blob:")}
+                unoptimized={!book.coverImage.startsWith("/")}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground">

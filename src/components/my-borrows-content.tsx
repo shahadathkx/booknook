@@ -349,10 +349,7 @@ export function MyBorrowsContent() {
                               alt={item.title}
                               fill
                               className="object-cover"
-                              unoptimized={
-                                item.coverImage.startsWith("data:") ||
-                                item.coverImage.startsWith("blob:")
-                              }
+                              unoptimized={!item.coverImage.startsWith("/")}
                             />
                           ) : (
                             <div

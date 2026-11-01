@@ -1,6 +1,64 @@
 import { Book } from "@/types/book";
 import { INITIAL_BOOKS } from "@/lib/seed-data";
 
+const CANONICAL_BOOK_COVERS: Record<string, string> = {
+  "to kill a mockingbird": "/images/books/bn-001.jpg",
+  "1984": "/images/books/bn-002.jpg",
+  "pride and prejudice": "/images/books/bn-003.jpg",
+  "dune": "/images/books/bn-004.jpg",
+  "the hobbit": "https://covers.openlibrary.org/b/isbn/9780547928227-L.jpg",
+  "the silmarillion": "https://covers.openlibrary.org/b/isbn/9780618391110-L.jpg",
+  "silmarillion": "https://covers.openlibrary.org/b/isbn/9780618391110-L.jpg",
+  "the pragmatic programmer": "https://covers.openlibrary.org/b/isbn/9780135957059-L.jpg",
+  "pragmatic programmer": "https://covers.openlibrary.org/b/isbn/9780135957059-L.jpg",
+  "atomic habits": "https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg",
+  "cosmos": "https://covers.openlibrary.org/b/isbn/9780345539434-L.jpg",
+  "a people's history of the world": "https://covers.openlibrary.org/b/isbn/9781844672387-L.jpg",
+  "people's history": "https://covers.openlibrary.org/b/isbn/9781844672387-L.jpg",
+  "the little prince": "https://covers.openlibrary.org/b/isbn/9780156012195-L.jpg",
+  "little prince": "https://covers.openlibrary.org/b/isbn/9780156012195-L.jpg",
+  "thinking, fast and slow": "https://covers.openlibrary.org/b/isbn/9780374533557-L.jpg",
+  "meditations": "https://covers.openlibrary.org/b/isbn/9780140449334-L.jpg",
+  "the great gatsby": "https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
+  "great gatsby": "https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
+  "harry potter": "https://covers.openlibrary.org/b/isbn/9780590353427-L.jpg",
+  "clean code": "https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg",
+  "brave new world": "https://covers.openlibrary.org/b/isbn/9780060850524-L.jpg",
+  "fahrenheit 451": "https://covers.openlibrary.org/b/isbn/9781451673319-L.jpg",
+  "sapiens": "https://covers.openlibrary.org/b/isbn/9780062316097-L.jpg",
+  "lord of the rings": "https://covers.openlibrary.org/b/isbn/9780618640157-L.jpg",
+};
+
+export function resolveOriginalBookCover(
+  title?: string,
+  existingUrl?: string,
+  isbn?: string
+): string | undefined {
+  const cleanTitle = (title || "").toLowerCase().trim();
+
+  // 1. If it matches a known canonical literary title, restore the authentic original cover
+  for (const [key, cover] of Object.entries(CANONICAL_BOOK_COVERS)) {
+    if (cleanTitle.includes(key)) {
+      return cover;
+    }
+  }
+
+  // 2. If it has an existing custom URL (ImgBB upload, Cloudinary, OpenLibrary, local path)
+  if (existingUrl && existingUrl.trim()) {
+    return existingUrl.trim();
+  }
+
+  // 3. Fallback to OpenLibrary via ISBN if available
+  if (isbn) {
+    const cleanIsbn = isbn.replace(/[-\s]/g, "");
+    if (/^\d{10,13}$/.test(cleanIsbn)) {
+      return `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg`;
+    }
+  }
+
+  return undefined;
+}
+
 /**
  * Normalize a raw book object from the API (which may use `_id` from MongoDB,
  * `image` instead of `coverImage`, `createdAt` instead of `addedAt`, etc.)
@@ -10,7 +68,8 @@ import { INITIAL_BOOKS } from "@/lib/seed-data";
 export function normalizeBook(raw: any): Book {
   if (!raw) return raw;
   const { _id, id, image, coverImage, cover_image, imageUrl, ...rest } = raw;
-  const resolvedImage = coverImage || image || cover_image || imageUrl || undefined;
+  const rawImage = coverImage || image || cover_image || imageUrl || undefined;
+  const resolvedImage = resolveOriginalBookCover(raw.title, rawImage, raw.isbn);
   const bookId = id ?? (typeof _id === "object" ? String(_id) : _id ? String(_id) : "");
 
   return {
@@ -53,7 +112,7 @@ export async function getNewArrivals(limit: number = 6): Promise<Book[]> {
 
     const res = await fetch(`${apiUrl}/books?sort=newest&limit=${limit}`, {
       signal: controller.signal,
-      next: { revalidate: 60 },
+      cache: "no-store",
     });
     clearTimeout(timeout);
 

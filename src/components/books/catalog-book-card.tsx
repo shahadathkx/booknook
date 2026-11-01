@@ -37,6 +37,7 @@ export function CatalogBookCard({ book }: CatalogBookCardProps) {
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            unoptimized={typeof coverUrl === "string" && coverUrl.startsWith("http")}
             onError={() => setImageError(true)}
           />
         ) : (

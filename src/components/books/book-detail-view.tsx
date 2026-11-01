@@ -324,6 +324,7 @@ export function BookDetailView({ initialBook, bookId }: BookDetailViewProps) {
                   priority
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 42vw"
+                  unoptimized={Boolean((liveBook.coverImage || (liveBook as any).image)?.startsWith("http"))}
                 />
               ) : (
                 <div
