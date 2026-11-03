@@ -8,8 +8,7 @@ import toast from "react-hot-toast";
 import { BorrowItem, BookCoverTheme } from "@/types/book";
 import { useAuth, getJwt } from "@/hooks/use-auth";
 import { useLibrary } from "@/context/library-context";
-import { api } from "@/lib/api";
-import { notify } from "@/lib/notify";
+import { ApiError, api } from "@/lib/api";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { BookNookButton } from "@/components/ui/booknook-button";
 import { Button } from "@/components/ui/button";
@@ -19,12 +18,59 @@ import {
   RiArrowGoBackLine,
   RiCalendarLine,
   RiTimeLine,
-  RiShieldCheckLine,
   RiImageLine,
   RiCompass3Line,
-  RiCheckLine,
-  RiAlertLine,
 } from "react-icons/ri";
+
+interface ApiBorrowRecord {
+  _id?: string;
+  id?: string;
+  bookId?: string | { _id?: string; id?: string };
+  book?: {
+    _id?: string;
+    id?: string;
+    title?: string;
+    author?: string;
+    coverImage?: string;
+    image?: string;
+    coverTheme?: BookCoverTheme;
+  };
+  bookTitle?: string;
+  title?: string;
+  author?: string;
+  bookImage?: string;
+  coverImage?: string;
+  image?: string;
+  coverTheme?: BookCoverTheme;
+  borrowDate?: string;
+  borrowedAt?: string;
+  createdAt?: string;
+  returnDate?: string;
+  dueDate?: string;
+}
+
+type LocalBorrowRecord = BorrowItem & { userEmail?: string };
+
+function isLocalBorrowRecord(value: unknown): value is LocalBorrowRecord {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const record = value as Partial<LocalBorrowRecord>;
+  return (
+    typeof record.id === "string" &&
+    typeof record.bookId === "string" &&
+    typeof record.title === "string" &&
+    typeof record.borrowDate === "string" &&
+    typeof record.returnDate === "string" &&
+    (record.userEmail === undefined || typeof record.userEmail === "string")
+  );
+}
+
+function isReturnDateOverdue(returnDateIso: string): boolean {
+  const returnDate = Date.parse(returnDateIso);
+  return Number.isFinite(returnDate) && returnDate < Date.now();
+}
 
 export function MyBorrowsContent() {
   const router = useRouter();
@@ -32,74 +78,103 @@ export function MyBorrowsContent() {
   const { books: contextBooks, returnBook: contextReturnBook } = useLibrary();
 
   const [borrows, setBorrows] = useState<BorrowItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [returningId, setReturningId] = useState<string | null>(null);
 
-  // Private route: wait for useSession's isPending to finish before deciding anything
+
   useEffect(() => {
     if (!isPending && !isAuthLoading && !user) {
       router.replace("/login?callbackUrl=/my-borrows");
     }
   }, [isPending, isAuthLoading, user, router]);
 
-  // Load active borrows for the logged-in reader
+
   const loadBorrows = useCallback(async (userEmail: string) => {
     setIsLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:7000";
 
     try {
-      const token = await getJwt();
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 2000);
+      const token = await getJwt(true);
+      const response = await api.get<
+        { data?: ApiBorrowRecord[]; borrows?: ApiBorrowRecord[] } | ApiBorrowRecord[]
+      >("/borrows", { token: token || undefined });
+      const items = Array.isArray(response)
+        ? response
+        : response.borrows || response.data;
 
-      const res = await fetch(`${apiUrl}/borrows?email=${encodeURIComponent(userEmail)}`, {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-      clearTimeout(timeout);
-
-      if (res.ok) {
-        const json = await res.json();
-        const items = Array.isArray(json) ? json : json?.borrows || json?.data;
-        if (Array.isArray(items) && items.length > 0) {
-          const mapped: BorrowItem[] = items.map((it: any) => ({
-            id: it._id || it.id || it.bookId || it.book?._id,
-            bookId: it.bookId?._id || it.bookId || it.book?.id || it.id,
-            title: it.book?.title || it.bookTitle || it.title || "Library Volume",
-            author: it.book?.author || it.author || "BookNook Author",
-            coverImage: it.book?.coverImage || it.book?.image || it.coverImage || it.image,
-            coverTheme: it.book?.coverTheme || it.coverTheme,
-            borrowDate: it.borrowDate || it.borrowedAt || it.createdAt || new Date().toISOString(),
-            returnDate:
-              it.returnDate ||
-              it.dueDate ||
-              new Date(Date.now() + 7 * 86400000).toISOString(),
-          }));
-          setBorrows(mapped);
-          setIsLoading(false);
-          return;
-        }
+      if (!Array.isArray(items)) {
+        throw new Error("The server returned an invalid borrowed-books response.");
       }
-    } catch {
-      // Backend offline or unreachable; fall back to local context records
+
+      const mapped = items.flatMap((item): BorrowItem[] => {
+        const id = item._id || item.id;
+        const bookId =
+          typeof item.bookId === "string"
+            ? item.bookId
+            : item.bookId?._id || item.bookId?.id || item.book?._id || item.book?.id;
+
+        if (!id || !bookId) {
+          return [];
+        }
+
+        return [
+          {
+            id,
+            bookId,
+            title: item.book?.title || item.bookTitle || item.title || "Library Volume",
+            author: item.book?.author || item.author || "BookNook Author",
+            coverImage:
+              item.book?.coverImage ||
+              item.book?.image ||
+              item.bookImage ||
+              item.coverImage ||
+              item.image,
+            coverTheme: item.book?.coverTheme || item.coverTheme,
+            borrowDate:
+              item.borrowDate || item.borrowedAt || item.createdAt || new Date().toISOString(),
+            returnDate:
+              item.returnDate ||
+              item.dueDate ||
+              new Date(Date.now() + 7 * 86400000).toISOString(),
+          },
+        ];
+      });
+
+      setBorrows(mapped);
+      setIsLoading(false);
+      return;
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+        router.replace("/login?callbackUrl=/my-borrows");
+        setBorrows([]);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!(error instanceof ApiError) || error.status !== 0) {
+        toast.error(
+          error instanceof Error ? error.message : "Unable to load your borrowed books."
+        );
+        setBorrows([]);
+        setIsLoading(false);
+        return;
+      }
+
+      console.warn("Borrow service unavailable; using saved local borrow records.", error);
     }
 
-    // Local library fallback matching user email/name or local loan records
+
     const emailLower = userEmail.toLowerCase().trim();
     const localSaved: BorrowItem[] = [];
     try {
       const STORAGE_MY_BORROWS = "booknook_my_borrows";
       const raw = localStorage.getItem(STORAGE_MY_BORROWS);
       if (raw) {
-        const parsed = JSON.parse(raw);
+        const parsed: unknown = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          const userMatches = parsed.filter(
-            (p: any) =>
-              !p.userEmail ||
-              p.userEmail.toLowerCase().trim() === emailLower
+          const userMatches = parsed.filter(isLocalBorrowRecord).filter(
+            (record) =>
+              !record.userEmail ||
+              record.userEmail.toLowerCase().trim() === emailLower
           );
           localSaved.push(...userMatches);
         }
@@ -134,7 +209,7 @@ export function MyBorrowsContent() {
           new Date(Date.now() + 7 * 86400000).toISOString(),
       }));
 
-    // Merge deduplicating by id and bookId
+
     const mergedMap = new Map<string, BorrowItem>();
     [...localSaved, ...matchedBorrows].forEach((item) => {
       if (!mergedMap.has(item.bookId)) {
@@ -144,46 +219,52 @@ export function MyBorrowsContent() {
 
     setBorrows(Array.from(mergedMap.values()));
     setIsLoading(false);
-  }, [contextBooks, user]);
+  }, [contextBooks, user, router]);
 
   useEffect(() => {
     if (user?.email) {
-      loadBorrows(user.email);
-    } else if (!isAuthLoading && !user) {
-      setIsLoading(false);
-    }
-  }, [user, isAuthLoading, loadBorrows]);
+      const timeoutId = window.setTimeout(() => {
+        void loadBorrows(user.email);
+      }, 0);
 
-  // Handle return book action (DELETE /borrows/:id with loading state and toast)
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [user?.email, loadBorrows]);
+
+
   const handleReturnBook = async (item: BorrowItem) => {
     setReturningId(item.id);
 
     try {
-      // 1. Send DELETE /borrows/:id with JWT token
-      const token = await getJwt(true);
-      try {
+      const isServerBorrow = /^[a-f\d]{24}$/i.test(item.id);
+      if (isServerBorrow) {
+        const token = await getJwt(true);
         await api.delete(`/borrows/${item.id}`, {
           token: token || undefined,
         });
-      } catch (backendErr) {
-        console.warn("Backend DELETE /borrows/:id notice:", backendErr);
       }
 
-      // 2. Remove book from the table UI immediately
       setBorrows((prev) => prev.filter((b) => b.id !== item.id));
 
-      // 3. Return book in library context to increment copies and clear loan
-      contextReturnBook(item.bookId);
+      if (!isServerBorrow) {
+        contextReturnBook(item.bookId);
+      }
 
-      // 4. Remove from localStorage backup
       try {
         const STORAGE_MY_BORROWS = "booknook_my_borrows";
         const raw = localStorage.getItem(STORAGE_MY_BORROWS);
         if (raw) {
-          const parsed = JSON.parse(raw);
+          const parsed: unknown = JSON.parse(raw);
           if (Array.isArray(parsed)) {
             const filtered = parsed.filter(
-              (p: any) => p.id !== item.id && p.bookId !== item.bookId
+              (record) => {
+                if (!record || typeof record !== "object") {
+                  return true;
+                }
+
+                const borrow = record as { id?: unknown; bookId?: unknown };
+                return borrow.id !== item.id && borrow.bookId !== item.bookId;
+              }
             );
             localStorage.setItem(STORAGE_MY_BORROWS, JSON.stringify(filtered));
           }
@@ -192,8 +273,8 @@ export function MyBorrowsContent() {
         console.warn("Could not remove from localStorage backup:", e);
       }
 
-      // 5. Show success toast notification
       toast.success(`"${item.title}" returned successfully!`);
+      router.refresh();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unable to process return.";
       toast.error(msg);
@@ -202,7 +283,7 @@ export function MyBorrowsContent() {
     }
   };
 
-  // Helper date formatter
+
   const formatDate = (isoString: string) => {
     try {
       return new Date(isoString).toLocaleDateString("en-US", {
@@ -215,16 +296,7 @@ export function MyBorrowsContent() {
     }
   };
 
-  // Check if return date is overdue
-  const isOverdue = (returnDateIso: string) => {
-    try {
-      return new Date(returnDateIso).getTime() < Date.now();
-    } catch {
-      return false;
-    }
-  };
 
-  // Auth loading state: show spinner while pending
   if (isPending || isAuthLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 flex flex-col items-center justify-center gap-4 text-center">
@@ -241,7 +313,7 @@ export function MyBorrowsContent() {
     );
   }
 
-  // Prevent flash of content if unauthenticated while router.replace executes
+
   if (!user) {
     return null;
   }
@@ -283,7 +355,7 @@ export function MyBorrowsContent() {
             </div>
           </div>
         ) : borrows.length === 0 ? (
-          /* Empty state with real text and a link to browse books */
+
           <div className="py-20 px-6 max-w-lg mx-auto text-center rounded-3xl border border-border bg-card shadow-sm flex flex-col items-center justify-center">
             <div className="size-16 rounded-2xl bg-[#15251d] border border-[#1f362b] text-[#8fd9a8] flex items-center justify-center mb-4 shadow-inner">
               <RiBookOpenLine className="size-8" />
@@ -332,7 +404,7 @@ export function MyBorrowsContent() {
               </thead>
               <tbody className="divide-y divide-border/60 text-sm">
                 {borrows.map((item) => {
-                  const overdue = isOverdue(item.returnDate);
+                  const overdue = isReturnDateOverdue(item.returnDate);
                   const isReturning = returningId === item.id;
 
                   return (
