@@ -1,13 +1,9 @@
-import { auth } from "@/lib/auth";
+import { getAuthHandlers } from "@/lib/auth";
 import { connectToMongo } from "@/lib/mongodb";
-import { toNextJsHandler } from "better-auth/next-js";
 
-const handlers = toNextJsHandler(auth);
-
-async function ensureDatabase(): Promise<Response | null> {
+async function dispatch(req: Request, method: "GET" | "POST"): Promise<Response> {
   try {
     await connectToMongo();
-    return null;
   } catch (error) {
     console.error("[BetterAuth] MongoDB connection failed:", error);
     return Response.json(
@@ -15,14 +11,10 @@ async function ensureDatabase(): Promise<Response | null> {
       { status: 503 }
     );
   }
+
+  const handlers = await getAuthHandlers();
+  return handlers[method](req);
 }
 
-export async function GET(req: Request) {
-  const databaseError = await ensureDatabase();
-  return databaseError ?? handlers.GET(req);
-}
-
-export async function POST(req: Request) {
-  const databaseError = await ensureDatabase();
-  return databaseError ?? handlers.POST(req);
-}
+export const GET = (req: Request) => dispatch(req, "GET");
+export const POST = (req: Request) => dispatch(req, "POST");

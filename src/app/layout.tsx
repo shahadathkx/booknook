@@ -28,12 +28,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Manrope:wght@300..800&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground antialiased selection:bg-[#8fd9a8]/30 selection:text-[#8fd9a8]">
         <ThemeProvider>

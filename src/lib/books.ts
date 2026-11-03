@@ -105,9 +105,8 @@ export function normalizeBook(raw: any): Book {
 
 
 export async function getNewArrivals(limit: number = 6): Promise<Book[]> {
-  const apiUrl = getApiBaseUrl();
-
   try {
+    const apiUrl = getApiBaseUrl();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 1500);
 
@@ -161,6 +160,7 @@ export async function fetchBooks(params: FetchBooksParams = {}): Promise<Book[]>
     const res = await fetch(url, {
       signal: controller.signal,
       headers: { "Content-Type": "application/json" },
+      cache: "no-store",
     });
     clearTimeout(timeout);
 

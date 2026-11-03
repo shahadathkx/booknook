@@ -17,6 +17,7 @@ import { Book } from "@/types/book";
 import { siteConfig } from "@/lib/config";
 import { format, addDays } from "date-fns";
 import { BookmarkPlus, Calendar, User, Mail, ShieldCheck } from "lucide-react";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 interface BorrowBookDialogProps {
   book: Book | null;
@@ -32,16 +33,12 @@ export function BorrowBookDialog({ book, open, onOpenChange }: BorrowBookDialogP
   const [loanDays, setLoanDays] = useState<number>(siteConfig.defaultLoanDays);
   const [notes, setNotes] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [mountedDate, setMountedDate] = useState<Date | null>(null);
-
-  React.useEffect(() => {
-    setMountedDate(new Date());
-  }, []);
+  const isHydrated = useHydrated();
 
   const dueDate = useMemo(() => {
-    const base = mountedDate ?? new Date("2026-10-31T00:00:00Z");
+    const base = isHydrated ? new Date() : new Date("2026-10-31T00:00:00Z");
     return addDays(base, loanDays);
-  }, [mountedDate, loanDays]);
+  }, [isHydrated, loanDays]);
 
   const handleReset = () => {
     setBorrowerName("");

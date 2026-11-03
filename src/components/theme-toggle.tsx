@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi2";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useHydrated();
 
   if (!mounted) {
     return (

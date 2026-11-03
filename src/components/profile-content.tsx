@@ -5,20 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useLibrary } from "@/context/library-context";
-import { BookNookButton } from "@/components/ui/booknook-button";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Spinner } from "@/components/ui/spinner";
 import { notify } from "@/lib/notify";
 import { siteConfig } from "@/lib/config";
 import {
-  RiUser3Line,
   RiMailLine,
   RiShieldCheckLine,
   RiBookMarkedLine,
   RiFileList3Line,
   RiLogoutBoxRLine,
-  RiLoginBoxLine,
 } from "react-icons/ri";
 
 export function ProfileContent() {

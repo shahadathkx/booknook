@@ -22,11 +22,8 @@ import {
   RiAddCircleLine,
   RiEditLine,
   RiDeleteBin7Line,
-  RiShieldCheckLine,
   RiImageLine,
   RiBookOpenLine,
-  RiRefreshLine,
-  RiArrowRightLine,
 } from "react-icons/ri";
 
 export function MyBooksContent() {
@@ -52,10 +49,9 @@ export function MyBooksContent() {
 
 
   const fetchUserBooks = useCallback(async (userEmail: string) => {
-    setIsFetching(true);
-
     try {
       const token = await getJwt(true);
+      setIsFetching(true);
       const response = await api.get<{ data?: unknown[] } | unknown[]>("/books/my", {
         token: token || undefined,
       });
@@ -102,11 +98,12 @@ export function MyBooksContent() {
   }, [contextBooks, router]);
 
   useEffect(() => {
-    if (user?.email) {
-      fetchUserBooks(user.email);
-    } else if (!isAuthLoading && !user) {
-      setIsFetching(false);
-    }
+    if (!user?.email) return;
+    const userEmail = user.email;
+    const timer = window.setTimeout(() => {
+      void fetchUserBooks(userEmail);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [user, isAuthLoading, fetchUserBooks]);
 
 

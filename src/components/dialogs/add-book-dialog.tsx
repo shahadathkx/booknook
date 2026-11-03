@@ -41,18 +41,13 @@ export function AddBookDialog({ open, onOpenChange }: AddBookDialogProps) {
   const [author, setAuthor] = useState("");
   const [genre, setGenre] = useState<BookGenre>("Fiction");
   const [isbn, setIsbn] = useState("");
-  const [publishedYear, setPublishedYear] = useState<string>("2026");
+  const [publishedYear, setPublishedYear] = useState<string>(() =>
+    new Date().getFullYear().toString()
+  );
   const [description, setDescription] = useState("");
   const [coverThemeKey, setCoverThemeKey] = useState("navy");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [maxAllowedYear, setMaxAllowedYear] = useState<number>(2027);
-
-
-  React.useEffect(() => {
-    const current = new Date().getFullYear();
-    setPublishedYear(current.toString());
-    setMaxAllowedYear(current + 1);
-  }, []);
+  const [maxAllowedYear] = useState(() => new Date().getFullYear() + 1);
 
   const handleReset = () => {
     setTitle("");

@@ -17,14 +17,10 @@ import {
   RiUploadCloud2Line,
   RiCheckLine,
   RiCloseLine,
-  RiImageLine,
   RiUser3Line,
   RiMailLine,
   RiLockLine,
   RiBookMarkedLine,
-  RiShieldCheckLine,
-  RiFileList3Line,
-  RiHashtag,
 } from "react-icons/ri";
 
 const CATEGORIES = ["Fiction", "Science", "History", "Kids", "Others"] as const;

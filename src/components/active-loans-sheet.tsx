@@ -29,7 +29,8 @@ export function ActiveLoansSheet({
   const [nowTime, setNowTime] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    setNowTime(Date.now());
+    const timer = window.setTimeout(() => setNowTime(Date.now()), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const borrowedBooks = books.filter((b) => b.status === "borrowed");
@@ -65,7 +66,9 @@ export function ActiveLoansSheet({
             borrowedBooks.map((book) => {
               const borrow = book.currentBorrow;
               const isOverdue =
-                borrow && nowTime !== null && new Date(borrow.dueDate).getTime() < nowTime;
+                borrow &&
+                nowTime !== null &&
+                new Date(borrow.dueDate).getTime() < nowTime;
 
               return (
                 <div

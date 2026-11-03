@@ -36,3 +36,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+### Vercel environment variables
+
+Set these variables in the Vercel project settings for each deployment environment:
+
+- `NEXT_PUBLIC_API_URL`: deployed Express API base URL.
+- `BETTER_AUTH_URL`: deployed frontend origin.
+- `BETTER_AUTH_SECRET`: a private secret with at least 32 characters.
+- `MONGODB_URI`: MongoDB connection string for the shared BookNook database.
+
+Optional variables include `TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`,
+`GOOGLE_CLIENT_SECRET`, and `NEXT_PUBLIC_IMGBB_KEY`. Set
+`NEXT_PUBLIC_APP_URL` to the frontend origin if OAuth redirects use it.

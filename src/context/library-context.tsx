@@ -1,11 +1,44 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo, useSyncExternalStore } from "react";
 import { Book, AddBookInput, BorrowBookInput, BookCoverTheme, BookStatus } from "@/types/book";
 import { INITIAL_BOOKS, COVER_THEMES } from "@/lib/seed-data";
 import { siteConfig } from "@/lib/config";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 const STORAGE_KEY = "booknook_library_catalog_v1";
+const LIBRARY_CHANGE_EVENT = "booknook-library-change";
+
+function subscribeToLibraryStorage(onChange: () => void): () => void {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(LIBRARY_CHANGE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(LIBRARY_CHANGE_EVENT, onChange);
+  };
+}
+
+function getLibraryStorageSnapshot(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function getServerLibraryStorageSnapshot(): null {
+  return null;
+}
+
+function parseStoredBooks(serializedBooks: string | null): Book[] | null {
+  if (!serializedBooks) return null;
+  try {
+    const parsed: unknown = JSON.parse(serializedBooks);
+    return Array.isArray(parsed) && parsed.length > 0 ? (parsed as Book[]) : null;
+  } catch {
+    return null;
+  }
+}
 
 interface LibraryContextType {
   books: Book[];
@@ -25,32 +58,28 @@ interface LibraryContextType {
 const LibraryContext = createContext<LibraryContextType | undefined>(undefined);
 
 export function LibraryProvider({ children }: { children: React.ReactNode }) {
-  const [books, setBooks] = useState<Book[]>(INITIAL_BOOKS);
-  const [isLoaded, setIsLoaded] = useState(false);
-
+  const [memoryBooks, setMemoryBooks] = useState<Book[]>(INITIAL_BOOKS);
+  const isLoaded = useHydrated();
+  const serializedBooks = useSyncExternalStore(
+    subscribeToLibraryStorage,
+    getLibraryStorageSnapshot,
+    getServerLibraryStorageSnapshot
+  );
+  const storedBooks = useMemo(() => parseStoredBooks(serializedBooks), [serializedBooks]);
+  const books = storedBooks ?? memoryBooks;
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setBooks(parsed);
-        }
-      }
-    } catch {
-
+    if (serializedBooks && !storedBooks) {
       console.warn("Could not load library catalog from localStorage, using seed data.");
-    } finally {
-      setIsLoaded(true);
     }
-  }, []);
+  }, [serializedBooks, storedBooks]);
 
 
   const saveBooks = (updated: Book[]) => {
-    setBooks(updated);
+    setMemoryBooks(updated);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new Event(LIBRARY_CHANGE_EVENT));
     } catch (e) {
       console.error("Failed to persist catalog:", e);
     }

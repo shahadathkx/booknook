@@ -10,9 +10,9 @@ const TOKEN_STORAGE_KEY = "booknook_jwt_token";
 
 export class ApiError extends Error {
   status: number;
-  data: any;
+  data: unknown;
 
-  constructor(message: string, status: number, data?: any) {
+  constructor(message: string, status: number, data?: unknown) {
     super(message);
     this.name = "ApiError";
     this.status = status;
@@ -23,7 +23,7 @@ export class ApiError extends Error {
 export interface RequestOptions extends Omit<RequestInit, "body"> {
   token?: string;
   params?: Record<string, string | number | boolean | undefined>;
-  body?: any;
+  body?: unknown;
 }
 
 
@@ -62,7 +62,7 @@ export function setStoredToken(token: string | null): void {
 
 
 
-export async function apiClient<T = any>(
+export async function apiClient<T = unknown>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
@@ -114,7 +114,7 @@ export async function apiClient<T = any>(
 
 
     const contentType = response.headers.get("content-type");
-    let responseData: any = null;
+    let responseData: unknown = null;
     if (contentType && contentType.includes("application/json")) {
       responseData = await response.json();
     } else {
@@ -122,9 +122,7 @@ export async function apiClient<T = any>(
     }
 
     if (!response.ok) {
-      const errorMessage =
-        (typeof responseData === "object" && responseData?.message) ||
-        (typeof responseData === "string" && responseData) ||
+      const errorMessage = getResponseErrorMessage(responseData) ||
         response.statusText ||
         `HTTP Error ${response.status}`;
 
@@ -144,20 +142,28 @@ export async function apiClient<T = any>(
 
 
 
+function getResponseErrorMessage(data: unknown): string | undefined {
+  if (typeof data === "string") return data;
+  if (typeof data !== "object" || data === null || !("message" in data)) {
+    return undefined;
+  }
+  return typeof data.message === "string" ? data.message : undefined;
+}
+
 export const api = {
-  get: <T = any>(endpoint: string, options?: RequestOptions) =>
+  get: <T = unknown>(endpoint: string, options?: RequestOptions) =>
     apiClient<T>(endpoint, { ...options, method: "GET" }),
 
-  post: <T = any>(endpoint: string, body?: any, options?: RequestOptions) =>
+  post: <T = unknown>(endpoint: string, body?: unknown, options?: RequestOptions) =>
     apiClient<T>(endpoint, { ...options, method: "POST", body }),
 
-  put: <T = any>(endpoint: string, body?: any, options?: RequestOptions) =>
+  put: <T = unknown>(endpoint: string, body?: unknown, options?: RequestOptions) =>
     apiClient<T>(endpoint, { ...options, method: "PUT", body }),
 
-  patch: <T = any>(endpoint: string, body?: any, options?: RequestOptions) =>
+  patch: <T = unknown>(endpoint: string, body?: unknown, options?: RequestOptions) =>
     apiClient<T>(endpoint, { ...options, method: "PATCH", body }),
 
-  delete: <T = any>(endpoint: string, options?: RequestOptions) =>
+  delete: <T = unknown>(endpoint: string, options?: RequestOptions) =>
     apiClient<T>(endpoint, { ...options, method: "DELETE" }),
 
   setToken: setStoredToken,

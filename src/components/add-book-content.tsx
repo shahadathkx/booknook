@@ -15,7 +15,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { BookGenre } from "@/types/book";
 import { COVER_THEMES } from "@/lib/seed-data";
 import {
-  RiBookReadLine,
   RiArrowLeftLine,
   RiSparklingLine,
   RiCheckLine,
@@ -52,17 +51,13 @@ export function AddBookContent() {
   const [author, setAuthor] = useState("");
   const [genre, setGenre] = useState<BookGenre>("Fiction");
   const [isbn, setIsbn] = useState("");
-  const [publishedYear, setPublishedYear] = useState<string>("2026");
+  const [publishedYear, setPublishedYear] = useState<string>(() =>
+    new Date().getFullYear().toString()
+  );
   const [description, setDescription] = useState("");
   const [coverThemeKey, setCoverThemeKey] = useState("emerald");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const currentYear = new Date().getFullYear();
-    setPublishedYear(currentYear.toString());
-  }, []);
-
 
   if (isPending || isAuthLoading) {
     return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Book, BookGenre } from "@/types/book";
 import { api } from "@/lib/api";
@@ -19,8 +19,6 @@ import {
 import {
   RiEditLine,
   RiUploadCloud2Line,
-  RiCheckLine,
-  RiCloseLine,
   RiImageLine,
 } from "react-icons/ri";
 
@@ -39,43 +37,48 @@ export function EditBookModal({
   onOpenChange,
   onBookUpdated,
 }: EditBookModalProps) {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [category, setCategory] = useState<string>("Fiction");
-  const [description, setDescription] = useState("");
-  const [totalCopies, setTotalCopies] = useState<number | string>(1);
+  if (!book || !open) return null;
 
+  return (
+    <EditBookModalForm
+      key={book.id}
+      book={book}
+      open={open}
+      onOpenChange={onOpenChange}
+      onBookUpdated={onBookUpdated}
+    />
+  );
+}
 
-  const [currentCoverUrl, setCurrentCoverUrl] = useState<string>("");
+interface EditBookModalFormProps extends Omit<EditBookModalProps, "book"> {
+  book: Book;
+}
+
+function EditBookModalForm({
+  book,
+  open,
+  onOpenChange,
+  onBookUpdated,
+}: EditBookModalFormProps) {
+  const initialCategory = book.category || book.genre || "Fiction";
+  const [title, setTitle] = useState(book.title || "");
+  const [author, setAuthor] = useState(book.author || "");
+  const [category, setCategory] = useState<string>(
+    CATEGORIES.find((candidate) => candidate === initialCategory) || "Others"
+  );
+  const [description, setDescription] = useState(book.description || "");
+  const [totalCopies, setTotalCopies] = useState<number | string>(
+    book.totalCopies ?? (book.status === "available" ? 1 : 0)
+  );
+  const currentCoverUrl = book.coverImage || "";
   const [newCoverPreview, setNewCoverPreview] = useState<string | null>(null);
   const [uploadedCoverUrl, setUploadedCoverUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-
-  useEffect(() => {
-    if (book && open) {
-      setTitle(book.title || "");
-      setAuthor(book.author || "");
-      const cat = book.category || book.genre || "Fiction";
-      setCategory(
-        CATEGORIES.includes(cat as any) ? cat : "Others"
-      );
-      setDescription(book.description || "");
-      setTotalCopies(book.totalCopies ?? (book.status === "available" ? 1 : 0));
-      setCurrentCoverUrl(book.coverImage || "");
-      setNewCoverPreview(null);
-      setUploadedCoverUrl("");
-      setUploadProgress(0);
-      setUploadError(null);
-      setErrors({});
-    }
-  }, [book, open]);
 
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +95,6 @@ export function EditBookModal({
       return;
     }
 
-    setUploadError(null);
     const localPreview = URL.createObjectURL(file);
     setNewCoverPreview(localPreview);
 
@@ -169,7 +171,6 @@ export function EditBookModal({
   };
 
   const handleUploadFallback = (file: File, message: string) => {
-    setUploadError(message);
     notify.error("Upload Warning", message);
     const reader = new FileReader();
     reader.onload = () => {
@@ -184,7 +185,6 @@ export function EditBookModal({
     setNewCoverPreview(null);
     setUploadedCoverUrl("");
     setUploadProgress(0);
-    setUploadError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -277,8 +277,6 @@ export function EditBookModal({
       setIsSubmitting(false);
     }
   };
-
-  if (!book) return null;
 
   const displayImage = newCoverPreview || currentCoverUrl;
 
