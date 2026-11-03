@@ -5,12 +5,12 @@ import { getSessionCookie } from "better-auth/cookies";
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // Ensure public catalog routes (/books) are never intercepted
+
   if (pathname === "/books" || pathname === "/books/") {
     return NextResponse.next();
   }
 
-  // Check BetterAuth session cookie
+
   const sessionCookie = getSessionCookie(request);
 
   if (!sessionCookie) {
@@ -30,8 +30,6 @@ export const config = {
     "/add-book/:path*",
     "/my-books/:path*",
     "/my-borrows/:path*",
-    "/books/:id+",
     "/profile/:path*",
   ],
 };
-
