@@ -30,7 +30,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Design System Reference Colors */
+
   --color-forest-bg: #0e1a14;
   --color-forest-card: #15251d;
   --color-forest-border: #1f362b;
@@ -45,16 +45,16 @@
   --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-/* =========================================================================
-   BookNook Dark Theme: "booknook-dark" (Deep green-black forest palette)
-   Background: #0e1a14, Cards: #15251d, Borders: #1f362b, Accent: #8fd9a8
-   ========================================================================= */
+
+
+
+
 [data-theme="booknook-dark"],
 .dark,
 :root {
   color-scheme: dark;
 
-  /* DaisyUI Core Theme Tokens */
+
   --color-base-100: #0e1a14;
   --color-base-200: #15251d;
   --color-base-300: #1f362b;
@@ -72,7 +72,7 @@
   --color-warning: #e0915a;
   --color-error: #f87171;
 
-  /* Tailwind / Component Design Tokens */
+
   --background: #0e1a14;
   --foreground: #e6f0ea;
   --card: #15251d;
@@ -96,14 +96,14 @@
   --font-heading: 'Fraunces', Georgia, serif;
 }
 
-/* =========================================================================
-   BookNook Light Theme: "booknook-light" (Warm off-white with mint green accent)
-   Background: #f7f9f7, Cards: #ffffff, Borders: #dce6df, Accent: #8fd9a8
-   ========================================================================= */
+
+
+
+
 [data-theme="booknook-light"] {
   color-scheme: light;
 
-  /* DaisyUI Core Theme Tokens */
+
   --color-base-100: #f7f9f7;
   --color-base-200: #ffffff;
   --color-base-300: #dce6df;
@@ -121,7 +121,7 @@
   --color-warning: #e0915a;
   --color-error: #dc2626;
 
-  /* Tailwind / Component Design Tokens */
+
   --background: #f7f9f7;
   --foreground: #122119;
   --card: #ffffff;
