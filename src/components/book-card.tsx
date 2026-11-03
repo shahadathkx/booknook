@@ -32,13 +32,13 @@ export function BookCard({
 
   return (
     <div className="group relative rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#8fd9a8]/50 flex flex-col justify-between overflow-hidden">
-      {/* Decorative Spine Accent Glow */}
+      { }
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8fd9a8]/20 via-[#8fd9a8]/60 to-[#8fd9a8]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div>
-        {/* Top Header: Hardcover Mockup + Meta */}
+        { }
         <div className="flex gap-4 items-start">
-          {/* Tactile Book Cover */}
+          { }
           <div
             onClick={() => onDetailsClick(book)}
             className={`cursor-pointer w-20 h-28 shrink-0 rounded-lg bg-gradient-to-br ${book.coverTheme.gradientClass} shadow-md border border-white/20 p-2 flex flex-col justify-between relative overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg`}

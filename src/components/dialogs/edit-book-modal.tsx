@@ -45,7 +45,7 @@ export function EditBookModal({
   const [description, setDescription] = useState("");
   const [totalCopies, setTotalCopies] = useState<number | string>(1);
 
-  // Image editing state
+
   const [currentCoverUrl, setCurrentCoverUrl] = useState<string>("");
   const [newCoverPreview, setNewCoverPreview] = useState<string | null>(null);
   const [uploadedCoverUrl, setUploadedCoverUrl] = useState<string>("");
@@ -57,7 +57,7 @@ export function EditBookModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Pre-fill form with the book's current data when modal opens
+
   useEffect(() => {
     if (book && open) {
       setTitle(book.title || "");
@@ -77,7 +77,7 @@ export function EditBookModal({
     }
   }, [book, open]);
 
-  // Handle cover replacement upload via ImgBB
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -98,7 +98,7 @@ export function EditBookModal({
 
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_KEY?.trim();
     if (!apiKey) {
-      // Local fallback in development
+
       setIsUploading(true);
       setUploadProgress(50);
       const reader = new FileReader();
@@ -246,7 +246,7 @@ export function EditBookModal({
             : copiesNum,
       };
 
-      // 1. Send PATCH /books/:id with JWT token
+
       const token = await getJwt(true);
       try {
         await api.patch(`/books/${book.id}`, updatedPayload, {
@@ -256,14 +256,14 @@ export function EditBookModal({
         console.warn("Backend PATCH /books/:id warning:", backendErr);
       }
 
-      // 2. Notify parent to update UI
+
       const updatedFullBook: Book = {
         ...book,
         ...updatedPayload,
       };
       onBookUpdated(updatedFullBook);
 
-      // 3. Show success toast notification
+
       notify.success(
         "Book Updated Successfully",
         `"${title.trim()}" has been updated in the library catalog.`

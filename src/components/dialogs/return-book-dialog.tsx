@@ -59,7 +59,7 @@ export function ReturnBookDialog({ book, open, onOpenChange }: ReturnBookDialogP
           </DialogDescription>
         </DialogHeader>
 
-        {/* Book Spotlight Card */}
+        { }
         <div className="my-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-100/70 dark:bg-stone-900/50 p-3.5 flex items-center gap-3.5">
           <div
             className={`w-14 h-20 shrink-0 rounded-md bg-gradient-to-br ${book.coverTheme.gradientClass} shadow-md border border-white/20 flex flex-col justify-between p-1.5`}

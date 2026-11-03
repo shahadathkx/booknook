@@ -37,7 +37,7 @@ export function DeleteBookModal({
     setIsDeleting(true);
 
     try {
-      // 1. DELETE /books/:id with JWT token
+
       const token = await getJwt(true);
       try {
         await api.delete(`/books/${book.id}`, {
@@ -47,10 +47,10 @@ export function DeleteBookModal({
         console.warn("Backend DELETE /books/:id warning:", backendErr);
       }
 
-      // 2. Notify parent to remove from UI state
+
       onBookDeleted(book.id);
 
-      // 3. Success toast
+
       notify.success(
         "Volume Removed",
         `"${book.title}" was permanently removed from your catalog.`

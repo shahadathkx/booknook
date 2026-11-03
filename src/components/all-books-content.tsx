@@ -22,7 +22,7 @@ export function AllBooksContent() {
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
 
-  // Modals state
+
   const [isAddBookOpen, setIsAddBookOpen] = useState(false);
   const [borrowTargetBook, setBorrowTargetBook] = useState<Book | null>(null);
   const [returnTargetBook, setReturnTargetBook] = useState<Book | null>(null);
@@ -83,7 +83,7 @@ export function AllBooksContent() {
 
   return (
     <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Header with Title and Add Book Action */}
+      { }
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border">
         <div>
           <SectionHeading
@@ -114,7 +114,7 @@ export function AllBooksContent() {
         </div>
       </div>
 
-      {/* Search, Filter, & Sort Toolbar */}
+      { }
       <div className="pt-6">
         <SearchAndFilters
           searchQuery={searchQuery}
@@ -131,7 +131,7 @@ export function AllBooksContent() {
         />
       </div>
 
-      {/* Book Grid Area */}
+      { }
       <div className="mt-8">
         {!isLoaded ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3 text-center">
@@ -151,7 +151,7 @@ export function AllBooksContent() {
         )}
       </div>
 
-      {/* Modal Dialogs */}
+      { }
       <AddBookDialog open={isAddBookOpen} onOpenChange={setIsAddBookOpen} />
 
       <BorrowBookDialog
