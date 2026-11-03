@@ -115,24 +115,24 @@ export function Footer() {
             <div className="space-y-2.5 text-xs text-muted-foreground">
               <div className="flex items-start gap-2.5">
                 <RiMapPinLine className="size-4 text-[#8fd9a8] shrink-0 mt-0.5" />
-                <span>42 Literary Way, Cambridge, MA 02138</span>
+                <span>Mymensingh, Bangladesh</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <RiMailLine className="size-4 text-[#8fd9a8] shrink-0" />
                 <a
-                  href="mailto:curator@booknook.org"
+                  href="mailto:booknook.app.official@gmail.com"
                   className="hover:text-[#8fd9a8] transition-colors"
                 >
-                  curator@booknook.org
+                  booknook.app.official@gmail.com
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <RiPhoneLine className="size-4 text-[#8fd9a8] shrink-0" />
                 <a
-                  href="tel:+15552345678"
+                  href="tel:+8801864123312"
                   className="hover:text-[#8fd9a8] transition-colors"
                 >
-                  +1 (555) 234-5678
+                  +8801864123312
                 </a>
               </div>
             </div>
