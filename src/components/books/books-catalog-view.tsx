@@ -28,6 +28,15 @@ const CATEGORIES = [
   "Non-Fiction",
 ];
 
+function getBookIdentity(book: Book): string {
+  const isbn = book.isbn?.replace(/[^a-z0-9]/gi, "").toLowerCase();
+  if (isbn) return `isbn:${isbn}`;
+
+  const title = book.title.trim().toLowerCase().replace(/\s+/g, " ");
+  const author = book.author.trim().toLowerCase().replace(/\s+/g, " ");
+  return title && author ? `title:${title}|author:${author}` : `id:${book.id}`;
+}
+
 export function BooksCatalogView() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -41,7 +50,7 @@ export function BooksCatalogView() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [, startTransition] = useTransition();
 
-  // Load books from API with search and category
+
   const loadBooks = useCallback(async (cat: string, search: string) => {
     setIsLoading(true);
     try {
@@ -50,7 +59,7 @@ export function BooksCatalogView() {
         search: search.trim() || undefined,
         sort: "newest",
       });
-      setBooks(data);
+      setBooks(Array.from(new Map(data.map((book) => [getBookIdentity(book), book])).values()));
     } catch {
       setBooks([]);
     } finally {
@@ -58,7 +67,7 @@ export function BooksCatalogView() {
     }
   }, []);
 
-  // Debounced API call when search or category changes
+
   useEffect(() => {
     const handler = setTimeout(() => {
       loadBooks(selectedCategory, searchQuery);
@@ -67,7 +76,7 @@ export function BooksCatalogView() {
     return () => clearTimeout(handler);
   }, [selectedCategory, searchQuery, loadBooks]);
 
-  // Update URL search parameters when filters change
+
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     startTransition(() => {
@@ -123,7 +132,8 @@ export function BooksCatalogView() {
               "Updating shelves..."
             ) : (
               <>
-                <strong className="text-foreground">{books.length}</strong> {books.length === 1 ? "book" : "books"} listed
+                <strong className="text-foreground">{books.length}</strong>{" "}
+                {books.length === 1 ? "unique book" : "unique books"} listed
               </>
             )}
           </span>
@@ -224,7 +234,7 @@ export function BooksCatalogView() {
             </div>
           </div>
         ) : books.length === 0 ? (
-          /* Empty state with REAL, meaningful text */
+
           <div className="py-20 px-6 max-w-lg mx-auto text-center rounded-3xl border border-border bg-card/60 shadow-sm flex flex-col items-center justify-center">
             <div className="size-16 rounded-2xl bg-[#15251d] border border-[#1f362b] text-[#e0915a] flex items-center justify-center mb-4 shadow-inner">
               <RiBook2Line className="size-8" />
@@ -255,7 +265,7 @@ export function BooksCatalogView() {
             </BookNookButton>
           </div>
         ) : (
-          /* 3 cards per row on desktop, 2 on tablet, 1 on mobile */
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {books.map((book) => (
               <CatalogBookCard key={book.id} book={book} />

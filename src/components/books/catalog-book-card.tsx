@@ -27,9 +27,8 @@ export function CatalogBookCard({ book }: CatalogBookCardProps) {
   const coverUrl = imageError ? null : rawCoverUrl;
 
   return (
-    <article className="group flex flex-col rounded-3xl border border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 hover:border-[#8fd9a8]/50 h-full relative">
-      {/* Cover image container */}
-      <div className="relative aspect-[2/3] w-full overflow-hidden bg-[#15251d] shrink-0">
+    <article className="group flex aspect-square flex-col rounded-3xl border border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 hover:border-[#8fd9a8]/50 h-full relative">
+      <div className="relative h-[38%] w-full overflow-hidden bg-[#15251d] shrink-0">
         {coverUrl ? (
           <Image
             src={coverUrl}
@@ -56,10 +55,8 @@ export function CatalogBookCard({ book }: CatalogBookCardProps) {
           </div>
         )}
 
-        {/* Ambient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 group-hover:opacity-20 transition-opacity" />
 
-        {/* Availability Badge */}
         <div className="absolute top-3 right-3 z-10">
           <span
             className={`text-[11px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-md shadow-sm flex items-center gap-1.5 ${
@@ -78,11 +75,9 @@ export function CatalogBookCard({ book }: CatalogBookCardProps) {
         </div>
       </div>
 
-      {/* Card Content Area */}
-      <div className="flex flex-col flex-1 p-5 gap-3">
-        {/* Category Pill */}
+      <div className="flex min-h-0 flex-1 flex-col p-3 gap-2">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#e0915a] bg-[#e0915a]/10 px-2.5 py-0.5 rounded-full border border-[#e0915a]/25">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-[#e0915a] bg-[#e0915a]/10 px-2 py-0.5 rounded-full border border-[#e0915a]/25 truncate">
             {categoryName}
           </span>
           {book.publishedYear && (
@@ -92,10 +87,9 @@ export function CatalogBookCard({ book }: CatalogBookCardProps) {
           )}
         </div>
 
-        {/* Title and Author */}
-        <div className="flex-1">
+        <div className="min-h-0 flex-1">
           <Link href={`/books/${book.id}`}>
-            <h3 className="font-heading font-serif font-bold text-foreground text-lg leading-snug line-clamp-1 group-hover:text-[#8fd9a8] transition-colors">
+            <h3 className="font-heading font-serif font-bold text-foreground text-base leading-snug line-clamp-1 group-hover:text-[#8fd9a8] transition-colors">
               {book.title}
             </h3>
           </Link>
@@ -103,12 +97,11 @@ export function CatalogBookCard({ book }: CatalogBookCardProps) {
             <RiUser3Line className="size-3.5 text-[#8fd9a8]/80 shrink-0" />
             <span className="truncate">{book.author}</span>
           </p>
-          <p className="text-xs text-muted-foreground leading-relaxed mt-2.5 line-clamp-2">
+          <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 line-clamp-2">
             {book.description}
           </p>
         </div>
 
-        {/* Action Button */}
         <div className="pt-2 border-t border-border/60">
           <Link href={`/books/${book.id}`} className="block w-full">
             <BookNookButton
