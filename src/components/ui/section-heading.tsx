@@ -11,13 +11,13 @@ interface SectionHeadingProps {
   id?: string;
 }
 
-/**
- * Single consistent section heading style across BookNook:
- * - Font: Fraunces Serif
- * - Size: 2xl sm:3xl
- * - Color: Crisp theme foreground
- * - Eyebrow: Small orange step/category tag (#e0915a)
- */
+
+
+
+
+
+
+
 export function SectionHeading({
   eyebrow,
   title,

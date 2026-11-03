@@ -38,7 +38,7 @@ export function SearchAndFilters({
   return (
     <div className="space-y-3.5 mb-6">
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        {/* Search Bar */}
+        { }
         <div className="relative flex-1">
           <Input
             value={searchQuery}
@@ -58,7 +58,7 @@ export function SearchAndFilters({
           )}
         </div>
 
-        {/* Status Filter Segmented Control */}
+        { }
         <div className="flex rounded-full p-1 bg-card border border-border self-start md:self-auto shrink-0">
           {(
             [

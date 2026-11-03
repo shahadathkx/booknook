@@ -9,10 +9,10 @@ export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "mint" | "muted" | "white";
 }
 
-/**
- * Reusable BookNook Spinner component
- * Matches the dark forest-green & mint-green design palette.
- */
+
+
+
+
 export function Spinner({
   size = "default",
   label,

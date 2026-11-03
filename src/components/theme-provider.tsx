@@ -23,9 +23,9 @@ export function ThemeProvider({
   );
 }
 
-/**
- * Synchronizes the Tailwind 'dark' class with the active DaisyUI theme.
- */
+
+
+
 function ThemeSync() {
   const { resolvedTheme } = useTheme();
 
@@ -40,9 +40,9 @@ function ThemeSync() {
   return null;
 }
 
-/**
- * Hot-toast container styled specifically for BookNook's forest-green & mint palette
- */
+
+
+
 function CustomToaster() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme !== "booknook-light";

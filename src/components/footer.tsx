@@ -42,7 +42,7 @@ export function Footer() {
     <footer className="mt-auto border-t border-border bg-card transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
-          {/* Brand & Purpose (5 cols) */}
+          { }
           <div className="md:col-span-5 space-y-4">
             <Link href="/" className="inline-flex items-center gap-2.5">
               <div className="size-9 rounded-2xl bg-gradient-to-br from-[#1a382a] via-[#15251d] to-[#0e1a14] border border-[#1f362b] shadow-sm flex items-center justify-center text-[#8fd9a8]">
@@ -53,12 +53,12 @@ export function Footer() {
               </span>
             </Link>
 
-            {/* Exactly one real sentence about BookNook */}
+            { }
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md">
               BookNook is a community-first digital library sanctuary designed to celebrate timeless literature, making book borrowing, reading tracking, and collection sharing effortless.
             </p>
 
-            {/* Social Icons */}
+            { }
             <div className="flex items-center gap-2 pt-1">
               {socialLinks.map((item) => {
                 const Icon = item.icon;
@@ -78,7 +78,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Quick Links (3 cols) */}
+          { }
           <div className="md:col-span-3 space-y-3">
             <h3 className="font-heading font-serif text-sm font-bold text-foreground tracking-wide">
               Library Navigation
@@ -107,7 +107,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact Information (4 cols) */}
+          { }
           <div className="md:col-span-4 space-y-3">
             <h3 className="font-heading font-serif text-sm font-bold text-foreground tracking-wide">
               Contact & Circulation Desk

@@ -26,7 +26,7 @@ export function ProfileContent() {
   const { user, isLoading, isPending, signOut } = useAuth();
   const { books, borrowedCount } = useLibrary();
 
-  // Private route: wait for useSession's isPending to finish before deciding anything
+
   useEffect(() => {
     if (!isPending && !isLoading && !user) {
       router.replace("/login?callbackUrl=/profile");
@@ -44,7 +44,7 @@ export function ProfileContent() {
     }
   };
 
-  // Show spinner while useSession is pending
+
   if (isPending || isLoading) {
     return (
       <div className="max-w-2xl mx-auto py-28 px-4 flex flex-col items-center justify-center gap-4 text-center">
@@ -61,12 +61,12 @@ export function ProfileContent() {
     );
   }
 
-  // Prevent flash of content if unauthenticated while router.replace executes
+
   if (!user) {
     return null;
   }
 
-  // Active loans for this user (if name or email matches or general library active loans)
+
   const userBorrows = books.filter(
     (b) =>
       b.status === "borrowed" &&
@@ -82,13 +82,13 @@ export function ProfileContent() {
         description="Your official BookNook patron credentials, circulation status, and library account details."
       />
 
-      {/* Main Profile Card */}
+      { }
       <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-sm relative overflow-hidden mt-6">
-        {/* Decorative Top Accent Glow */}
+        { }
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8fd9a8]/60 to-transparent" />
 
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          {/* Avatar / Photo */}
+          { }
           <div className="relative shrink-0">
             {user.image ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -107,7 +107,7 @@ export function ProfileContent() {
             </div>
           </div>
 
-          {/* User Details */}
+          { }
           <div className="flex-1 text-center sm:text-left min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
@@ -131,7 +131,7 @@ export function ProfileContent() {
           </div>
         </div>
 
-        {/* Stats Grid */}
+        { }
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 mt-6 border-t border-border">
           <div className="p-3.5 rounded-2xl bg-background border border-border">
             <span className="text-[11px] text-muted-foreground block">Branch</span>
@@ -155,7 +155,7 @@ export function ProfileContent() {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        { }
         <div className="mt-8 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Link href="/my-borrows">
