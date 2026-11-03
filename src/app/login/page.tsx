@@ -66,7 +66,7 @@ function LoginForm() {
         return;
       }
 
-      // Fetch and cache JWT token for Express server API calls
+
       await getJwt(true);
 
       notify.success("Welcome Back", `Successfully signed in as ${email.trim()}`);

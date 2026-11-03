@@ -57,7 +57,7 @@ function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  // Strict Password Validation Rules
+
   const passwordChecks = useMemo(() => {
     const hasMinLength = password.length >= 6;
     const hasUppercase = /[A-Z]/.test(password);
@@ -145,7 +145,7 @@ function RegisterForm() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* Brand Header */}
+      { }
       <div className="text-center mb-6">
         <Link
           href="/"
@@ -167,13 +167,13 @@ function RegisterForm() {
         />
       </div>
 
-      {/* Card Container */}
+      { }
       <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xl relative overflow-hidden">
-        {/* Decorative Top Accent Glow */}
+        { }
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8fd9a8]/60 to-transparent" />
 
         <form onSubmit={handleRegister} className="space-y-3.5">
-          {/* Full Name */}
+          { }
           <div>
             <label className="text-xs font-medium text-foreground block mb-1">
               Full Name <span className="text-[#e0915a]">*</span>
@@ -191,7 +191,7 @@ function RegisterForm() {
             </div>
           </div>
 
-          {/* Email Address */}
+          { }
           <div>
             <label className="text-xs font-medium text-foreground block mb-1">
               Email Address <span className="text-[#e0915a]">*</span>
@@ -209,7 +209,7 @@ function RegisterForm() {
             </div>
           </div>
 
-          {/* Photo URL (Optional) */}
+          { }
           <div>
             <label className="text-xs font-medium text-foreground block mb-1">
               Profile Photo URL <span className="text-muted-foreground font-normal">(Optional)</span>
@@ -226,7 +226,7 @@ function RegisterForm() {
             </div>
           </div>
 
-          {/* Password */}
+          { }
           <div>
             <label className="text-xs font-medium text-foreground block mb-1">
               Password <span className="text-[#e0915a]">*</span>
@@ -246,7 +246,7 @@ function RegisterForm() {
               <RiLockPasswordLine className="size-4 text-muted-foreground absolute left-3 top-3 pointer-events-none" />
             </div>
 
-            {/* Inline Password Validation Rules Indicator */}
+            { }
             <div className="mt-2.5 p-2.5 rounded-2xl bg-background border border-border space-y-1 text-[11px]">
               <div className="flex items-center gap-1.5">
                 {passwordChecks.hasMinLength ? (
@@ -307,7 +307,7 @@ function RegisterForm() {
             )}
           </div>
 
-          {/* Submit Button (Reusing ONE consistent rounded mint-green button) */}
+          { }
           <BookNookButton
             type="submit"
             size="default"
@@ -318,7 +318,7 @@ function RegisterForm() {
           </BookNookButton>
         </form>
 
-        {/* Divider */}
+        { }
         <div className="relative my-6 text-center text-xs text-muted-foreground">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border" />
@@ -328,7 +328,7 @@ function RegisterForm() {
           </span>
         </div>
 
-        {/* Google Social Button */}
+        { }
         <Button
           type="button"
           variant="outline"
@@ -340,7 +340,7 @@ function RegisterForm() {
           <span>{isGoogleLoading ? "Connecting..." : "Sign up with Google"}</span>
         </Button>
 
-        {/* Footer Link to Login */}
+        { }
         <p className="text-center text-xs text-muted-foreground mt-6">
           Already have an account?{" "}
           <Link

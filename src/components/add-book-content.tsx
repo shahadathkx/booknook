@@ -41,7 +41,7 @@ export function AddBookContent() {
   const { addBook } = useLibrary();
   const { user, isLoading: isAuthLoading, isPending } = useAuth();
 
-  // Private route: wait for useSession's isPending to finish before deciding anything
+
   useEffect(() => {
     if (!isPending && !isAuthLoading && !user) {
       router.replace("/login?callbackUrl=/add-book");
@@ -63,7 +63,7 @@ export function AddBookContent() {
     setPublishedYear(currentYear.toString());
   }, []);
 
-  // Show spinner while useSession is pending
+
   if (isPending || isAuthLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-28 flex flex-col items-center justify-center gap-4 text-center">
@@ -80,7 +80,7 @@ export function AddBookContent() {
     );
   }
 
-  // Prevent flash of content if unauthenticated while router.replace executes
+
   if (!user) {
     return null;
   }
