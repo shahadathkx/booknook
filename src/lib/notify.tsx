@@ -1,10 +1,10 @@
 import React from "react";
 import toast from "react-hot-toast";
 
-/**
- * Toast notifications powered by react-hot-toast.
- * Styled to match the BookNook dark forest-green & mint design system.
- */
+
+
+
+
 export const notify = {
   success: (title: string, description?: string) => {
     if (!description) {

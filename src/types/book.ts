@@ -17,8 +17,8 @@ export interface BorrowRecord {
   id?: string;
   borrowerName: string;
   borrowerEmail?: string;
-  borrowedAt: string; // ISO 8601 string
-  dueDate: string; // ISO 8601 string
+  borrowedAt: string;
+  dueDate: string;
   notes?: string;
 }
 

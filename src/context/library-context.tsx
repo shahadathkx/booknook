@@ -28,7 +28,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   const [books, setBooks] = useState<Book[]>(INITIAL_BOOKS);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Hydrate from localStorage on client mount
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -39,14 +39,14 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch {
-      // In case of parsing errors, fallback to initial books
+
       console.warn("Could not load library catalog from localStorage, using seed data.");
     } finally {
       setIsLoaded(true);
     }
   }, []);
 
-  // Sync state to localStorage whenever books change
+
   const saveBooks = (updated: Book[]) => {
     setBooks(updated);
     try {
@@ -57,7 +57,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addBook = (input: AddBookInput): { success: boolean; book?: Book; error?: string } => {
-    // Clean and validate input
+
     const cleanTitle = input.title?.trim() || "";
     const cleanAuthor = input.author?.trim() || "";
     const cleanDescription = input.description?.trim() || "";
@@ -77,7 +77,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
 
     const year = Number(input.publishedYear) || new Date().getFullYear();
 
-    // Determine cover theme
+
     const themeKey = input.coverThemeName || "emerald";
     const selectedTheme: BookCoverTheme = COVER_THEMES[themeKey] || COVER_THEMES.emerald;
 
