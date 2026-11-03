@@ -14,6 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { EditBookModal } from "@/components/dialogs/edit-book-modal";
 import { DeleteBookModal } from "@/components/dialogs/delete-book-modal";
+import { ApiError, api } from "@/lib/api";
+import { getJwt } from "@/lib/auth-client";
+import toast from "react-hot-toast";
 import {
   RiBookMarkedLine,
   RiAddCircleLine,
@@ -34,47 +37,55 @@ export function MyBooksContent() {
   const [userBooks, setUserBooks] = useState<Book[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
-  // Modal target states
+
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const [deletingBook, setDeletingBook] = useState<Book | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
 
-  // Private route: wait for useSession's isPending to finish before deciding anything
+
   useEffect(() => {
     if (!isPending && !isAuthLoading && !user) {
       router.replace("/login?callbackUrl=/my-books");
     }
   }, [isPending, isAuthLoading, user, router]);
 
-  // Fetch only the logged-in user's books (GET /books?email=...)
+
   const fetchUserBooks = useCallback(async (userEmail: string) => {
     setIsFetching(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:7000";
 
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 2000);
-      const res = await fetch(`${apiUrl}/books?email=${encodeURIComponent(userEmail)}`, {
-        signal: controller.signal,
-        headers: { "Content-Type": "application/json" },
+      const token = await getJwt(true);
+      const response = await api.get<{ data?: unknown[] } | unknown[]>("/books/my", {
+        token: token || undefined,
       });
-      clearTimeout(timeout);
-
-      if (res.ok) {
-        const json = await res.json();
-        const items = Array.isArray(json) ? json : json?.books || json?.data;
-        if (Array.isArray(items) && items.length > 0) {
-          setUserBooks(items.map(normalizeBook));
-          setIsFetching(false);
-          return;
-        }
+      const items = Array.isArray(response) ? response : response.data;
+      if (!Array.isArray(items)) {
+        throw new Error("The server returned an invalid books response.");
       }
-    } catch {
-      // Backend offline or timed out; filter local inventory
+
+      setUserBooks(items.map(normalizeBook));
+      setIsFetching(false);
+      return;
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+        router.replace("/login?callbackUrl=/my-books");
+        setUserBooks([]);
+        setIsFetching(false);
+        return;
+      }
+
+      if (error instanceof ApiError && error.status !== 0) {
+        toast.error(error.message);
+        setUserBooks([]);
+        setIsFetching(false);
+        return;
+      }
+
+      console.warn("Books service unavailable; using the local catalog.", error);
     }
 
-    // Local catalog matching: find books added by this user's email or name
+
     const emailLower = userEmail.toLowerCase().trim();
     const matched = contextBooks.filter((book) => {
       if (typeof book.addedBy === "object" && book.addedBy?.email) {
@@ -88,7 +99,7 @@ export function MyBooksContent() {
 
     setUserBooks(matched);
     setIsFetching(false);
-  }, [contextBooks]);
+  }, [contextBooks, router]);
 
   useEffect(() => {
     if (user?.email) {
@@ -98,25 +109,25 @@ export function MyBooksContent() {
     }
   }, [user, isAuthLoading, fetchUserBooks]);
 
-  // Handle successful edit
+
   const handleBookUpdated = (updatedBook: Book) => {
-    // 1. Update component state
+
     setUserBooks((prev) =>
       prev.map((b) => (b.id === updatedBook.id ? updatedBook : b))
     );
-    // 2. Update library context
+
     contextUpdateBook(updatedBook.id, updatedBook);
   };
 
-  // Handle successful delete
+
   const handleBookDeleted = (deletedId: string) => {
-    // 1. Update component state
+
     setUserBooks((prev) => prev.filter((b) => b.id !== deletedId));
-    // 2. Update library context
+
     contextDeleteBook(deletedId);
   };
 
-  // Authentication loading state: show spinner while pending
+
   if (isPending || isAuthLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 flex flex-col items-center justify-center gap-4 text-center">
@@ -133,14 +144,14 @@ export function MyBooksContent() {
     );
   }
 
-  // Prevent flash of content if unauthenticated while router.replace executes
+
   if (!user) {
     return null;
   }
 
   return (
     <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Header section with SectionHeading and Add Book CTA */}
+      { }
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-border">
         <div>
           <SectionHeading
@@ -167,7 +178,7 @@ export function MyBooksContent() {
         </div>
       </div>
 
-      {/* Main Content Area */}
+      { }
       <div className="mt-8">
         {isFetching ? (
           <div className="py-24 flex flex-col items-center justify-center gap-4 text-center">
@@ -182,7 +193,7 @@ export function MyBooksContent() {
             </div>
           </div>
         ) : userBooks.length === 0 ? (
-          /* Empty state with REAL text and a link to Add Book */
+
           <div className="py-20 px-6 max-w-lg mx-auto text-center rounded-3xl border border-border bg-card shadow-sm flex flex-col items-center justify-center">
             <div className="size-16 rounded-2xl bg-[#15251d] border border-[#1f362b] text-[#8fd9a8] flex items-center justify-center mb-4 shadow-inner">
               <RiBookMarkedLine className="size-8" />
@@ -209,7 +220,7 @@ export function MyBooksContent() {
           </div>
         ) : (
           <div>
-            {/* Desktop and Tablet Table View (Hidden on mobile) */}
+            { }
             <div className="hidden md:block rounded-3xl border border-border bg-card overflow-hidden shadow-lg">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -247,7 +258,7 @@ export function MyBooksContent() {
                         key={book.id}
                         className="hover:bg-muted/30 transition-colors group"
                       >
-                        {/* Cover Image */}
+                        { }
                         <td className="py-4 px-6">
                           <div className="relative aspect-[2/3] w-14 rounded-xl overflow-hidden bg-[#15251d] border border-border shadow-sm shrink-0">
                             {book.coverImage ? (
