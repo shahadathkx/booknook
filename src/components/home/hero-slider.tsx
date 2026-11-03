@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
-import { BookNookButton } from "@/components/ui/booknook-button";
 import { RiArrowRightLine } from "react-icons/ri";
 
 import "swiper/css";
@@ -98,11 +97,12 @@ export function HeroSlider() {
                 <p className="text-sm sm:text-base text-[#e6f0ea]/80 leading-relaxed max-w-xl mb-8">
                   {slide.body}
                 </p>
-                <Link href={slide.href} tabIndex={-1}>
-                  <BookNookButton size="lg" className="gap-2.5 group">
-                    {slide.cta}
-                    <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
-                  </BookNookButton>
+                <Link
+                  href={slide.href}
+                  className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-full bg-[#8fd9a8] px-6 text-base font-semibold text-[#0e1a14] shadow-xs transition-all duration-200 hover:scale-[1.02] hover:bg-[#7bc895] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8fd9a8]"
+                >
+                  {slide.cta}
+                  <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>

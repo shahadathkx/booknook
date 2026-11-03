@@ -9,7 +9,6 @@ let handlers: ReturnType<typeof toNextJsHandler> | undefined;
 export async function getAuthHandlers(): Promise<ReturnType<typeof toNextJsHandler>> {
   if (handlers) return handlers;
 
-  const client = await connectToMongo();
   const baseURL = process.env.BETTER_AUTH_URL?.trim();
   if (!baseURL) {
     throw new Error("BETTER_AUTH_URL must be configured.");
@@ -26,6 +25,7 @@ export async function getAuthHandlers(): Promise<ReturnType<typeof toNextJsHandl
     throw new Error("BETTER_AUTH_URL must be a valid absolute URL.");
   }
 
+  const client = await connectToMongo();
   const rawOrigins = process.env.TRUSTED_ORIGINS
     ? process.env.TRUSTED_ORIGINS.split(",").map((origin) => origin.trim())
     : ["http://localhost:3000", baseURL];

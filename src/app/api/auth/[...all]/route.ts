@@ -1,19 +1,21 @@
 import { getAuthHandlers } from "@/lib/auth";
-import { connectToMongo } from "@/lib/mongodb";
 
 async function dispatch(req: Request, method: "GET" | "POST"): Promise<Response> {
   try {
-    await connectToMongo();
+    const handlers = await getAuthHandlers();
+    return await handlers[method](req);
   } catch (error) {
-    console.error("[BetterAuth] MongoDB connection failed:", error);
+    console.error("[BetterAuth] Request failed:", error);
+    const message =
+      error instanceof Error &&
+      /^(BETTER_AUTH_URL|BETTER_AUTH_SECRET) must /.test(error.message)
+        ? error.message
+        : "Authentication service is unavailable. Check the deployment configuration and database connection.";
     return Response.json(
-      { message: "Authentication database unavailable." },
+      { message },
       { status: 503 }
     );
   }
-
-  const handlers = await getAuthHandlers();
-  return handlers[method](req);
 }
 
 export const GET = (req: Request) => dispatch(req, "GET");

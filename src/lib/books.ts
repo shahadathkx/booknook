@@ -143,7 +143,6 @@ export interface FetchBooksParams {
 
 
 export async function fetchBooks(params: FetchBooksParams = {}): Promise<Book[]> {
-  const apiUrl = getApiBaseUrl();
   const query = new URLSearchParams();
   if (params.search?.trim()) query.set("search", params.search.trim());
   if (params.category && params.category !== "all" && params.category !== "All") {
@@ -153,6 +152,7 @@ export async function fetchBooks(params: FetchBooksParams = {}): Promise<Book[]>
   if (params.limit) query.set("limit", params.limit.toString());
 
   try {
+    const apiUrl = getApiBaseUrl();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 2000);
     const queryString = query.toString();

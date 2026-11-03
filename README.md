@@ -49,3 +49,9 @@ Set these variables in the Vercel project settings for each deployment environme
 Optional variables include `TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`,
 `GOOGLE_CLIENT_SECRET`, and `NEXT_PUBLIC_IMGBB_KEY`. Set
 `NEXT_PUBLIC_APP_URL` to the frontend origin if OAuth redirects use it.
+
+To enable Google sign-in, set both `GOOGLE_CLIENT_ID` and
+`GOOGLE_CLIENT_SECRET` in Vercel and add
+`https://booknook-theta.vercel.app/api/auth/callback/google` as an authorized
+redirect URI in the Google OAuth client. Replace the hostname if you use a
+different production domain. Redeploy after changing environment variables.
