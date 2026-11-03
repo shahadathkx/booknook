@@ -35,14 +35,14 @@ export function AddBookForm() {
   const { user, isLoading: isAuthLoading, isPending } = useAuth();
   const { addBook } = useLibrary();
 
-  // Form Fields
+
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState<CategoryType>("Fiction");
   const [description, setDescription] = useState("");
   const [totalCopies, setTotalCopies] = useState<number | string>(1);
 
-  // Image Upload State
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadedUrl, setUploadedUrl] = useState<string>("");
@@ -51,29 +51,29 @@ export function AddBookForm() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Validation & Submission State
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Private route: wait for useSession's isPending to finish before deciding anything
+
   useEffect(() => {
     if (!isPending && !isAuthLoading && !user) {
       router.replace("/login?callbackUrl=/add-book");
     }
   }, [isPending, isAuthLoading, user, router]);
 
-  // Handle File Selection and ImgBB Upload
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
+
     if (!file.type.startsWith("image/")) {
       notify.error("Invalid File Type", "Please select a PNG, JPG, WEBP, or GIF image.");
       return;
     }
 
-    // Validate size (max 10MB)
+
     if (file.size > 10 * 1024 * 1024) {
       notify.error("File Too Large", "Image size must be less than 10MB.");
       return;
@@ -82,11 +82,11 @@ export function AddBookForm() {
     setImageFile(file);
     setUploadError(null);
 
-    // Instant local preview
+
     const localPreviewUrl = URL.createObjectURL(file);
     setImagePreview(localPreviewUrl);
 
-    // Upload to ImgBB
+
     await uploadToImgBB(file);
   };
 
@@ -94,7 +94,7 @@ export function AddBookForm() {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_KEY?.trim();
 
     if (!apiKey) {
-      // Graceful fallback for local development without ImgBB key
+
       setIsUploading(true);
       setUploadProgress(40);
       const reader = new FileReader();
@@ -121,7 +121,7 @@ export function AddBookForm() {
       const formData = new FormData();
       formData.append("image", file);
 
-      // Use XMLHttpRequest to track live upload progress
+
       const xhr = new XMLHttpRequest();
       xhr.open("POST", `https://api.imgbb.com/1/upload?key=${apiKey}`);
 
@@ -172,7 +172,7 @@ export function AddBookForm() {
     setUploadError(message);
     notify.error("ImgBB Upload Failed", message);
 
-    // Fall back to local dataUrl so user is never blocked
+
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result as string;
@@ -193,7 +193,7 @@ export function AddBookForm() {
     }
   };
 
-  // Form Validation
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
@@ -226,7 +226,7 @@ export function AddBookForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Form Submit Handler
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -252,11 +252,11 @@ export function AddBookForm() {
       const numCopies = Math.max(1, Number(totalCopies) || 1);
       const finalImageUrl = uploadedUrl || imagePreview || undefined;
 
-      // Map Category to BookGenre for typing
+
       const mappedGenre: BookGenre =
         category === "Others" ? "Non-Fiction" : (category as BookGenre);
 
-      // 1. Fetch JWT token from session/memory for the Express backend
+
       const token = await getJwt(true);
 
       const payload = {
@@ -274,18 +274,18 @@ export function AddBookForm() {
         },
       };
 
-      // 2. POST to /books with JWT attached
+
       try {
         await api.post("/books", payload, {
           token: token || undefined,
         });
       } catch (backendError) {
-        // Log backend status; in local dev when Express backend is offline,
-        // we log gracefully and persist to library context so the user workflow is continuous
+
+
         console.warn("Express backend response:", backendError);
       }
 
-      // 3. Save into client library context
+
       addBook({
         title: title.trim(),
         author: author.trim(),
@@ -301,13 +301,13 @@ export function AddBookForm() {
         },
       });
 
-      // 4. Show success toast notification
+
       notify.success(
         "Book Added Successfully",
         `"${title.trim()}" has been cataloged and placed onto your shelf.`
       );
 
-      // 5. Redirect to /my-books
+
       router.push("/my-books");
     } catch (err) {
       const errorMessage =
@@ -317,7 +317,7 @@ export function AddBookForm() {
     }
   };
 
-  // Loading Session State: show spinner while pending
+
   if (isPending || isAuthLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-28 flex flex-col items-center justify-center gap-4 text-center">
@@ -334,7 +334,7 @@ export function AddBookForm() {
     );
   }
 
-  // Prevent flash of content if unauthenticated while router.replace executes
+
   if (!user) {
     return null;
   }

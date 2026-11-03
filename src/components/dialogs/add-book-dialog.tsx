@@ -47,7 +47,7 @@ export function AddBookDialog({ open, onOpenChange }: AddBookDialogProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [maxAllowedYear, setMaxAllowedYear] = useState<number>(2027);
 
-  // Client-side initialization for current year
+
   React.useEffect(() => {
     const current = new Date().getFullYear();
     setPublishedYear(current.toString());
