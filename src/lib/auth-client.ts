@@ -19,26 +19,26 @@ export const { signIn, signUp, signOut, useSession } = authClient;
 let memoryJwtToken: string | null = null;
 let memoryJwtExpiresAt = 0;
 
-/**
- * Fetches the JWT token for API calls to the Express server.
- * Updates local token storage for api.ts to include in Authorization: Bearer <token>.
- */
+
+
+
+
 export async function getJwt(forceRefresh = false): Promise<string | null> {
   if (typeof window === "undefined") return null;
 
-  // 1. Return unexpired memory token if available
+
   if (!forceRefresh && memoryJwtToken && Date.now() < memoryJwtExpiresAt) {
     return memoryJwtToken;
   }
 
-  // 2. Check stored token in api module
+
   const storedToken = api.getToken();
   if (!forceRefresh && storedToken) {
     memoryJwtToken = storedToken;
     return storedToken;
   }
 
-  // 3. Fetch fresh token from BetterAuth JWT endpoint
+
   try {
     const response = await fetch(`${appBaseUrl}/api/auth/token`, {
       method: "GET",
@@ -52,7 +52,7 @@ export async function getJwt(forceRefresh = false): Promise<string | null> {
       const data = await response.json();
       if (data?.token) {
         memoryJwtToken = data.token;
-        // Cache token for 10 minutes
+
         memoryJwtExpiresAt = Date.now() + 10 * 60 * 1000;
         api.setToken(data.token);
         return data.token;
@@ -65,9 +65,9 @@ export async function getJwt(forceRefresh = false): Promise<string | null> {
   return api.getToken();
 }
 
-/**
- * Convenience hook for authentication state and user profile
- */
+
+
+
 export function useAuth() {
   const session = useSession();
 

@@ -1,11 +1,10 @@
-/**
- * API Client wrapper for BookNook backend service.
- * Targets NEXT_PUBLIC_API_URL (default: http://localhost:7000)
- * Automatically attaches JWT Bearer token from local storage / cookies.
- */
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:7000";
+
+
+
+
+
+import { getApiBaseUrl } from "@/lib/config";
 
 const TOKEN_STORAGE_KEY = "booknook_jwt_token";
 
@@ -27,9 +26,9 @@ export interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: any;
 }
 
-/**
- * Get the current JWT token from storage or memory
- */
+
+
+
 export function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
   try {
@@ -43,9 +42,9 @@ export function getStoredToken(): string | null {
   }
 }
 
-/**
- * Store the JWT token for subsequent API requests
- */
+
+
+
 export function setStoredToken(token: string | null): void {
   if (typeof window === "undefined") return;
   try {
@@ -60,17 +59,17 @@ export function setStoredToken(token: string | null): void {
   }
 }
 
-/**
- * Core fetch wrapper with Bearer token authentication
- */
+
+
+
 export async function apiClient<T = any>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
   const { params, body, token, headers: customHeaders, ...customConfig } = options;
 
-  // Build query string if params are provided
-  let url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+
+  let url = `${getApiBaseUrl()}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
   if (params) {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
@@ -84,24 +83,25 @@ export async function apiClient<T = any>(
     }
   }
 
-  // Resolve JWT token
+
   const authToken = token || getStoredToken();
 
   const headers = new Headers(customHeaders);
 
-  // Set default JSON Content-Type if body is not FormData
+
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
   if (!isFormData && !headers.has("Content-Type") && body !== undefined) {
     headers.set("Content-Type", "application/json");
   }
 
-  // Attach Authorization: Bearer <token>
+
   if (authToken && !headers.has("Authorization")) {
     headers.set("Authorization", `Bearer ${authToken.replace(/^Bearer\s+/i, "")}`);
   }
 
   const config: RequestInit = {
     ...customConfig,
+    credentials: customConfig.credentials ?? "include",
     headers,
   };
 
@@ -112,7 +112,7 @@ export async function apiClient<T = any>(
   try {
     const response = await fetch(url, config);
 
-    // Parse JSON or text response
+
     const contentType = response.headers.get("content-type");
     let responseData: any = null;
     if (contentType && contentType.includes("application/json")) {
@@ -141,9 +141,9 @@ export async function apiClient<T = any>(
   }
 }
 
-/**
- * Convenient typed HTTP methods
- */
+
+
+
 export const api = {
   get: <T = any>(endpoint: string, options?: RequestOptions) =>
     apiClient<T>(endpoint, { ...options, method: "GET" }),
