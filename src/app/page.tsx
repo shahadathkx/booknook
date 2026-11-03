@@ -88,7 +88,7 @@ export default async function HomePage() {
 
   return (
     <main className="flex-1 flex flex-col">
-      {/* Hero Slider */}
+      { }
       <AnimatedSection>
         <section
           className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8"
@@ -98,7 +98,7 @@ export default async function HomePage() {
         </section>
       </AnimatedSection>
 
-      {/* New Arrivals */}
+      { }
       <AnimatedSection delay={0.05}>
         <section
           className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20"
@@ -120,8 +120,8 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {newArrivals.map((book) => (
-              <NewArrivalCard key={book.id} book={book} />
+            {newArrivals.map((book, idx) => (
+              <NewArrivalCard key={book.id || String(idx)} book={book} />
             ))}
           </div>
 
@@ -136,7 +136,7 @@ export default async function HomePage() {
         </section>
       </AnimatedSection>
 
-      {/* How Borrowing Works */}
+      { }
       <AnimatedSection delay={0.05}>
         <section
           className="w-full bg-[#0a1510] border-y border-[#1f362b]"
@@ -182,7 +182,7 @@ export default async function HomePage() {
         </section>
       </AnimatedSection>
 
-      {/* Top Categories */}
+      { }
       <AnimatedSection delay={0.05}>
         <section
           className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20"

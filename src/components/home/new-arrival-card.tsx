@@ -22,7 +22,7 @@ export function NewArrivalCard({ book }: NewArrivalCardProps) {
 
   return (
     <div className="group flex flex-col rounded-2xl border border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#8fd9a8]/40 h-full">
-      {/* Cover image with fixed aspect ratio */}
+      { }
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-[#1a2f25] shrink-0">
         {coverUrl ? (
           <Image

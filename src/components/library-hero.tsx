@@ -19,18 +19,18 @@ export function LibraryHero({
 }: LibraryHeroProps) {
   return (
     <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-background p-6 sm:p-10 shadow-sm mb-8">
-      {/* Background ambient decorative motif */}
+      { }
       <div className="absolute top-0 right-0 -mt-12 -mr-12 size-72 rounded-full bg-[#8fd9a8]/10 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 -mb-12 size-60 rounded-full bg-[#e0915a]/5 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-3xl">
-        {/* Eyebrow Label */}
+        { }
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#e0915a]/15 text-[#e0915a] border border-[#e0915a]/25 mb-4">
           <RiSparklingLine className="size-3 text-[#e0915a]" />
           <span>{siteConfig.libraryBranch} • Open Circulation</span>
         </div>
 
-        {/* Section Heading */}
+        { }
         <h1 className="font-heading font-serif text-3xl sm:text-5xl font-bold tracking-tight text-foreground leading-[1.15]">
           A Curated Sanctuary for Great Stories.
         </h1>
@@ -39,7 +39,7 @@ export function LibraryHero({
           Welcome to <strong className="text-foreground">{siteConfig.appName}</strong>. Add new literary acquisitions, borrow available volumes for your reading nook, and easily check books back onto the shelves when finished.
         </p>
 
-        {/* Quick Action Buttons - Reusing ONE rounded mint green button style */}
+        { }
         <div className="flex flex-wrap items-center gap-3 mt-6">
           <BookNookButton size="default" onClick={onOpenAddBook}>
             <RiBookReadLine className="size-4" />
