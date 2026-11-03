@@ -47,7 +47,7 @@ export function Navbar() {
     }
   };
 
-  // Navigation Links Definition
+
   const publicLinks = [
     { name: "Home", href: "/" },
     { name: "All Books", href: "/books" },
@@ -64,7 +64,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/90 backdrop-blur-md transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Left: Brand Logo & Title */}
+        { }
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
             <div className="size-9 rounded-2xl bg-gradient-to-br from-[#1a382a] via-[#15251d] to-[#0e1a14] border border-[#1f362b] shadow-sm flex items-center justify-center text-[#8fd9a8] transition-transform duration-200 group-hover:scale-105">
@@ -81,7 +81,7 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Navigation Links */}
+          { }
           <nav className="hidden md:flex items-center gap-1">
             {allNavLinks.map((link) => {
               const isActive =
@@ -118,10 +118,10 @@ export function Navbar() {
               <Skeleton className="size-8 rounded-full bg-muted" />
             </div>
           ) : user ? (
-            /* Logged-In User Dropdown */
+
             <DropdownMenu>
               <DropdownMenuTrigger
-                className="cursor-pointer inline-flex items-center gap-2 p-1 rounded-full border border-border hover:border-[#8fd9a8]/50 bg-card transition-all outline-none"
+                className="cursor-pointer inline-flex items-center gap-2 p-1 rounded-full border border-border hover:border-mint-accent/50 bg-card transition-all outline-none"
                 aria-label="User account menu"
               >
                 {user.image ? (
@@ -129,7 +129,7 @@ export function Navbar() {
                   <img
                     src={user.image}
                     alt={user.name || "Reader avatar"}
-                    className="size-7 rounded-full object-cover border border-[#8fd9a8]/30"
+                    className="size-7 rounded-full object-cover border border-mint-accent/30"
                   />
                 ) : (
                   <div className="size-7 rounded-full bg-[#8fd9a8] text-[#0e1a14] font-bold text-xs flex items-center justify-center select-none shadow-xs">
@@ -160,7 +160,7 @@ export function Navbar() {
                   onClick={() => router.push("/profile")}
                   className="rounded-xl px-2.5 py-2 text-xs font-medium cursor-pointer hover:bg-muted hover:text-[#8fd9a8] flex items-center gap-2"
                 >
-                  <RiUser3Line className="size-4 text-[#8fd9a8]" />
+                  <RiUser3Line className="size-4 text-mint-accent" />
                   <span>My Profile</span>
                 </DropdownMenuItem>
 
@@ -200,7 +200,7 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            /* Logged-Out Guest Actions */
+
             <div className="flex items-center gap-2">
               <Link href="/login">
                 <Button
