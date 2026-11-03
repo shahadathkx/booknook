@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { fetchBookById } from "@/lib/books";
 import { BookDetailView } from "@/components/books/book-detail-view";
 import { Spinner } from "@/components/ui/spinner";
@@ -8,11 +9,25 @@ interface BookPageProps {
   params: Promise<{ id: string }>;
 }
 
+async function getForwardedAuthHeaders(): Promise<Headers> {
+  const incomingHeaders = await headers();
+  const forwardedHeaders = new Headers();
+
+  for (const name of ["cookie", "authorization"]) {
+    const value = incomingHeaders.get(name);
+    if (value) {
+      forwardedHeaders.set(name, value);
+    }
+  }
+
+  return forwardedHeaders;
+}
+
 export async function generateMetadata({
   params,
 }: BookPageProps): Promise<Metadata> {
   const { id } = await params;
-  const book = await fetchBookById(id);
+  const book = await fetchBookById(id, await getForwardedAuthHeaders());
 
   if (!book) {
     return {
@@ -27,10 +42,14 @@ export async function generateMetadata({
   };
 }
 
-export default async function BookDetailPage({ params }: BookPageProps) {
+async function BookDetailContent({ params }: BookPageProps) {
   const { id } = await params;
-  const book = await fetchBookById(id);
+  const book = await fetchBookById(id, await getForwardedAuthHeaders());
 
+  return <BookDetailView initialBook={book} bookId={id} />;
+}
+
+export default function BookDetailPage({ params }: BookPageProps) {
   return (
     <Suspense
       fallback={
@@ -42,7 +61,7 @@ export default async function BookDetailPage({ params }: BookPageProps) {
         </div>
       }
     >
-      <BookDetailView initialBook={book} bookId={id} />
+      <BookDetailContent params={params} />
     </Suspense>
   );
 }

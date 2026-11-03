@@ -1,5 +1,6 @@
 import { Book } from "@/types/book";
 import { INITIAL_BOOKS } from "@/lib/seed-data";
+import { getApiBaseUrl } from "@/lib/config";
 
 const CANONICAL_BOOK_COVERS: Record<string, string> = {
   "to kill a mockingbird": "/images/books/bn-001.jpg",
@@ -36,19 +37,19 @@ export function resolveOriginalBookCover(
 ): string | undefined {
   const cleanTitle = (title || "").toLowerCase().trim();
 
-  // 1. If it matches a known canonical literary title, restore the authentic original cover
+
   for (const [key, cover] of Object.entries(CANONICAL_BOOK_COVERS)) {
     if (cleanTitle.includes(key)) {
       return cover;
     }
   }
 
-  // 2. If it has an existing custom URL (ImgBB upload, Cloudinary, OpenLibrary, local path)
+
   if (existingUrl && existingUrl.trim()) {
     return existingUrl.trim();
   }
 
-  // 3. Fallback to OpenLibrary via ISBN if available
+
   if (isbn) {
     const cleanIsbn = isbn.replace(/[-\s]/g, "");
     if (/^\d{10,13}$/.test(cleanIsbn)) {
@@ -59,11 +60,11 @@ export function resolveOriginalBookCover(
   return undefined;
 }
 
-/**
- * Normalize a raw book object from the API (which may use `_id` from MongoDB,
- * `image` instead of `coverImage`, `createdAt` instead of `addedAt`, etc.)
- * into the client-side `Book` shape that always uses `id` and `coverImage`.
- */
+
+
+
+
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function normalizeBook(raw: any): Book {
   if (!raw) return raw;
@@ -98,13 +99,13 @@ export function normalizeBook(raw: any): Book {
   } as Book;
 }
 
-/**
- * Server-side data fetcher for New Arrivals.
- * Performs GET /books?sort=newest&limit=6 to the backend API,
- * with automatic fallback to seeded library inventory if the external service is offline.
- */
+
+
+
+
+
 export async function getNewArrivals(limit: number = 6): Promise<Book[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:7000";
+  const apiUrl = getApiBaseUrl();
 
   try {
     const controller = new AbortController();
@@ -123,11 +124,9 @@ export async function getNewArrivals(limit: number = 6): Promise<Book[]> {
         return items.slice(0, limit).map(normalizeBook);
       }
     }
-  } catch {
-    // Backend service not reachable or timed out; use seeded library stacks
-  }
+  } catch {}
 
-  // Sort newest first by addedAt
+
   return [...INITIAL_BOOKS]
     .sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
     .slice(0, limit);
@@ -140,12 +139,12 @@ export interface FetchBooksParams {
   limit?: number;
 }
 
-/**
- * Fetches books from the API (GET /books?search=...&category=...)
- * with automatic fallback to seeded library inventory if the external service is offline.
- */
+
+
+
+
 export async function fetchBooks(params: FetchBooksParams = {}): Promise<Book[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:7000";
+  const apiUrl = getApiBaseUrl();
   const query = new URLSearchParams();
   if (params.search?.trim()) query.set("search", params.search.trim());
   if (params.category && params.category !== "all" && params.category !== "All") {
@@ -173,10 +172,10 @@ export async function fetchBooks(params: FetchBooksParams = {}): Promise<Book[]>
       }
     }
   } catch {
-    // Backend service not reachable or timed out; filter seeded library inventory
+
   }
 
-  // Local fallback
+
   let list = [...INITIAL_BOOKS];
 
   if (params.category && params.category !== "all" && params.category !== "All") {
@@ -202,33 +201,50 @@ export async function fetchBooks(params: FetchBooksParams = {}): Promise<Book[]>
   return list;
 }
 
-/**
- * Fetches a single book by ID from the API (GET /books/:id)
- * with automatic fallback to seeded library inventory.
- */
-export async function fetchBookById(id: string): Promise<Book | null> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:7000";
 
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(`${apiUrl}/books/${id}`, {
-      signal: controller.signal,
-      headers: { "Content-Type": "application/json" },
-    });
-    clearTimeout(timeout);
 
-    if (res.ok) {
-      const json = await res.json();
-      const book = json?.book || json?.data || json;
-      if (book && (book.id || book._id)) {
-        return normalizeBook(book);
-      }
-    }
-  } catch {
-    // API offline; fallback
+
+
+export async function fetchBookById(
+  id: string,
+  requestHeaders?: HeadersInit
+): Promise<Book | null> {
+  if (!/^[a-f\d]{24}$/i.test(id)) {
+    return INITIAL_BOOKS.find((book) => book.id === id) || null;
   }
 
-  return INITIAL_BOOKS.find((b) => b.id === id) || null;
-}
+  const apiUrl = getApiBaseUrl();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
 
+  try {
+    const headers = new Headers(requestHeaders);
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    const res = await fetch(`${apiUrl}/books/${encodeURIComponent(id)}`, {
+      signal: controller.signal,
+      headers,
+      cache: "no-store",
+    });
+
+    if (res.status === 404) {
+      return null;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Could not load book details (HTTP ${res.status}).`);
+    }
+
+    const json = await res.json();
+    const book = json?.book || json?.data || json;
+    if (!book || typeof book !== "object" || !(book.id || book._id)) {
+      throw new Error("The books API returned an invalid book details response.");
+    }
+
+    return normalizeBook(book);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
